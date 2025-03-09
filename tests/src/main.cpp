@@ -1,7 +1,7 @@
 #include "glad/glad.h"
-#include "app.h"
-#include "color.h"
-#include "component/block.h"
+#include "hierro/app.h"
+#include "hierro/color.h"
+#include "hierro/component/block.h"
 
 int main() {
   auto app = Application::get_instance();

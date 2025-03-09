@@ -1,6 +1,6 @@
 #include <functional>
 #include <vector>
-#include "color.h"
+#include "hierro/color.h"
 
 class Block {
 public:

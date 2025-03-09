@@ -1,10 +1,8 @@
 #include <glad/glad.h>
 #include <cstddef>
-// #include <functional>
-#include <vector>
-#include "component/block.h"
-#include "shader/vertex.h"
-#include "shader/fragment.h"
+#include "hierro/component/block.h"
+#include "hierro/shader/vertex.h"
+#include "hierro/shader/fragment.h"
 
 Block::Block() {
   // init vao
