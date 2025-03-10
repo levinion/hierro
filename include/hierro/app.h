@@ -1,9 +1,12 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <utility>
 #include "GLFW/glfw3.h"
 #include "color.h"
+#include "hierro/error.h"
+
 class GLFWwindow;
 
 using ResizeCallback = void (*)(int width, int height);
@@ -12,11 +15,17 @@ using KeyCallback = void (*)(int key, int scancode, int action, int mod);
 
 class Application {
 public:
-  int init();
-  bool frame();
+  HierroResult init();
+  void run();
+  bool update();
+  void render();
   void destroy();
+
   Application* on_resize(ResizeCallback callback);
   Application* on_key(KeyCallback callback);
+  Application* on_update(std::function<void()>);
+  Application* on_render(std::function<void()>);
+
   ~Application();
   static Application* get_instance();
   std::pair<int, int> version = std::pair(3, 3);
@@ -39,4 +48,6 @@ private:
   );
   ResizeCallback resize_callback = [](int height, int width) {};
   KeyCallback key_callback = [](int key, int scancode, int action, int mod) {};
+  std::function<void()> update_callback = [] {};
+  std::function<void()> render_callback = [] {};
 };

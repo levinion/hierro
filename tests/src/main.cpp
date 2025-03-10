@@ -1,26 +1,29 @@
-#include "glad/glad.h"
+#include <cmath>
+#include <ctime>
+#include "GLFW/glfw3.h"
 #include "hierro/app.h"
 #include "hierro/color.h"
 #include "hierro/component/block.h"
 
 int main() {
   auto app = Application::get_instance();
-  app->on_resize([](int width, int height) { glViewport(0, 0, width, height); }
-  )->init();
-  // app->init();
-
-  Block block1, block2;
-  block2.update([](Block* self) { self->center(); });
-  block1.update([](Block* self) {
-    self->width = 1;
-    self->color = Color::rgba(0.8, 0.2, 0.3, 0.7);
-    self->center();
-  });
-
-  while (app->frame()) {
-    glClear(GL_COLOR_BUFFER_BIT);
-    block1.draw();
-    block2.draw();
-  }
-  app->destroy();
+  app->init().unwrap();
+  Block block, block2;
+  block2.update([](auto self) { self->color = Color::rgba(0.2, 0.9, 0.4, 0.5); }
+  );
+  app
+    ->on_update([&] {
+      auto time = glfwGetTime();
+      auto timemagic = std::abs(std::sin(time));
+      block.update([&](auto self) {
+        self->width = timemagic;
+        self->color = Color::rgba(timemagic, timemagic, timemagic, timemagic);
+        self->set_position((timemagic - 0.5) * 2, (timemagic - 0.5) * 2);
+      });
+    })
+    ->on_render([&] {
+      block.draw();
+      block2.draw();
+    })
+    ->run();
 }

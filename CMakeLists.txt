@@ -29,3 +29,6 @@ target_link_libraries(${name} OpenGL::GL)
 
 add_subdirectory(./third_party/glad)
 target_link_libraries(${name} glad)
+
+add_subdirectory(./third_party/freetype-2.13.3/)
+target_link_libraries(${name} freetype)

@@ -1,16 +1,22 @@
-#include <GLFW/glfw3.h>
+#include "hierro/error.h"
+
+#include <ostream>
 #include <iostream>
 
-bool check_error() {
-  auto err = glGetError();
-  if (err != GL_NO_ERROR) {
-    std::cerr << "Error: " << err << std::endl;
-    return true;
+std::ostream& operator<<(std::ostream& out, const HierroError err) {
+  switch (err) {
+    case GLADERROR:
+      out << "GLAD ERROR";
+      return out;
+    default:
+      out << "UNDEFINED ERROR";
+      return out;
   }
-  return false;
-}
+};
 
-#define try_calling(func) \
-  func; \
-  if (check_error()) \
-    return -1;
+void HierroResult::unwrap() {
+  if (this->value) {
+    std::cout << "[hierro error]{" << this->value.value() << "}" << std::endl;
+    std::exit(1);
+  }
+}
