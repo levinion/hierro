@@ -1,15 +1,16 @@
 #include <functional>
 #include <vector>
 #include "hierro/color.h"
+#include "hierro/shader.h"
 
 class Block {
 public:
   unsigned int vbo;
   unsigned int vao;
   unsigned int ebo;
-  unsigned int program;
   std::vector<float> vertices;
   std::vector<unsigned int> indices;
+  Shader shader;
 
   float width = 0.5;
   float height = 0.5;
@@ -27,5 +28,5 @@ public:
 private:
   void update_vertices();
   void update_indices();
-  void init_program();
+  void init_shader();
 };

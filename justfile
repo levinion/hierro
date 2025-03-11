@@ -10,9 +10,13 @@ build:
   cmake --build build
 
 embed:
-  xxd -n _vertex_shader_code -i ./assets/shader/vertex.glsl | sed "s/}/,\'\\\0\'}/" > ./include/shader/vertex.h 
-  xxd -n _fragment_shader_code -i ./assets/shader/fragment.glsl | sed "s/}/,\'\\\0\'}/" > ./include/shader/fragment.h 
-  clang-format -i ./include/shader/*
+  - mkdir -p ./include/hierro/shader/block 
+  - mkdir -p ./include/hierro/shader/text 
+  xxd -n _block_vertex_shader_code -i ./assets/shader/block/vertex.glsl | sed "s/}/,\'\\\0\'}/" > ./include/hierro/shader/block/vertex.h 
+  xxd -n _block_fragment_shader_code -i ./assets/shader/block/fragment.glsl | sed "s/}/,\'\\\0\'}/" > ./include/hierro/shader/block/fragment.h 
+  xxd -n _text_vertex_shader_code -i ./assets/shader/text/vertex.glsl | sed "s/}/,\'\\\0\'}/" > ./include/hierro/shader/text/vertex.h 
+  xxd -n _text_fragment_shader_code -i ./assets/shader/text/fragment.glsl | sed "s/}/,\'\\\0\'}/" > ./include/hierro/shader/text/fragment.h 
+  clang-format -i ./include/hierro/shader/**/*.h
 
 clean:
   rm -rf build

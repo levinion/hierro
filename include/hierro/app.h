@@ -9,10 +9,6 @@
 
 class GLFWwindow;
 
-using ResizeCallback = void (*)(int width, int height);
-
-using KeyCallback = void (*)(int key, int scancode, int action, int mod);
-
 class Application {
 public:
   HierroResult init();
@@ -21,10 +17,12 @@ public:
   void render();
   void destroy();
 
-  Application* on_resize(ResizeCallback callback);
-  Application* on_key(KeyCallback callback);
+  Application* on_resize(std::function<void(int, int)> callback);
+  Application* on_key(std::function<void(int, int, int, int)> callback);
   Application* on_update(std::function<void()>);
   Application* on_render(std::function<void()>);
+
+  std::pair<int, int> window_size();
 
   ~Application();
   static Application* get_instance();
@@ -46,8 +44,9 @@ private:
     int action,
     int mod
   );
-  ResizeCallback resize_callback = [](int height, int width) {};
-  KeyCallback key_callback = [](int key, int scancode, int action, int mod) {};
+  std::function<void(int, int)> resize_callback = [](int height, int width) {};
+  std::function<void(int, int, int, int)> key_callback =
+    [](int key, int scancode, int action, int mod) {};
   std::function<void()> update_callback = [] {};
   std::function<void()> render_callback = [] {};
 };

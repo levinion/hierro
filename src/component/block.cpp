@@ -1,8 +1,8 @@
 #include <glad/glad.h>
-#include <cstddef>
 #include "hierro/component/block.h"
-#include "hierro/shader/vertex.h"
-#include "hierro/shader/fragment.h"
+#include "hierro/shader/block/vertex.h"
+#include "hierro/shader/block/fragment.h"
+#include "hierro/shader.h"
 
 Block::Block() {
   // init vao
@@ -12,7 +12,7 @@ Block::Block() {
   // init ebo
   glGenBuffers(1, &this->ebo);
 
-  this->init_program();
+  this->init_shader();
 
   // init vertices and indices
   this->update_vertices();
@@ -34,8 +34,7 @@ Block::Block() {
 
 void Block::draw() {
   glBindVertexArray(this->vao);
-  glUseProgram(this->program);
-
+  this->shader.use();
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
@@ -92,29 +91,9 @@ void Block::center() {
   this->set_position(-width / 2, height / 2);
 }
 
-void Block::init_program() {
-  auto vertex_shader_code = (const char*)_vertex_shader_code;
-  auto fragment_shader_code = (const char*)_fragment_shader_code;
+void Block::init_shader() {
+  auto vertex_shader_code = (const char*)_block_vertex_shader_code;
+  auto fragment_shader_code = (const char*)_block_fragment_shader_code;
 
-  unsigned int vertex_shader;
-  vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_code, NULL);
-  glCompileShader(vertex_shader);
-
-  unsigned int fragment_shader;
-  fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_code, NULL);
-  glCompileShader(fragment_shader);
-
-  unsigned int shader_program;
-  shader_program = glCreateProgram();
-
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-
-  this->program = shader_program;
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
+  this->shader = Shader(vertex_shader_code, fragment_shader_code);
 }

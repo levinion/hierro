@@ -73,3 +73,9 @@ void Application::destroy() {
 Application::Application() {}
 
 Application::~Application() {}
+
+std::pair<int, int> Application::window_size() {
+  int width, height;
+  glfwGetWindowSize(this->window, &width, &height);
+  return { width, height };
+}

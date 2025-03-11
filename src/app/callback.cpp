@@ -10,7 +10,7 @@ void Application::frame_buffer_size_callback(
   Application::get_instance()->resize_callback(width, height);
 }
 
-Application* Application::on_resize(ResizeCallback callback) {
+Application* Application::on_resize(std::function<void(int, int)> callback) {
   this->resize_callback = callback;
   return this;
 }
@@ -25,7 +25,8 @@ void Application::glfw_key_callback(
   Application::get_instance()->key_callback(key, scancode, action, mod);
 }
 
-Application* Application::on_key(KeyCallback callback) {
+Application*
+Application::on_key(std::function<void(int, int, int, int)> callback) {
   this->key_callback = callback;
   return this;
 }
