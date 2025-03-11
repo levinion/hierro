@@ -12,8 +12,6 @@ int main() {
   auto tg = TextGenerater::get_instance();
   tg->init("assets/fonts/LXGWWenKai-Regular.ttf");
 
-  std::string text = "hello";
-
   app->on_resize([&](int width, int height) { tg->viewport(width, height); })
     ->on_update([&] {})
     ->on_render([&] {
@@ -25,6 +23,8 @@ int main() {
         1,
         Color::rgb(0, 0, 0)
       );
+
+      tg->draw_text("你好", 25, 25, 1, Color::rgb(0, 0, 0));
     })
     ->run();
 }

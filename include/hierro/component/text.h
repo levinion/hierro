@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
+#include "freetype/freetype.h"
 #include "hierro/shader.h"
 #include "hierro/color.h"
 
@@ -21,11 +22,14 @@ public:
 
 private:
   static TextGenerater* instance;
-  std::unordered_map<char, Character> character_table;
+  std::unordered_map<char32_t, Character> character_table;
   Shader shader;
   void init_freetype(std::string font);
   void init_shader();
   void init_buffer();
+  void add_character(char32_t c);
   unsigned int vao;
   unsigned int vbo;
+  FT_Library ft;
+  FT_Face face;
 };
