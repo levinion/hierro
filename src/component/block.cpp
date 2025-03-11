@@ -39,18 +39,42 @@ void Block::draw() {
 }
 
 void Block::update_vertices() {
-  this->vertices = {
-    this->x,         this->y - height, 0.0f, // left down
-    this->color.r,   this->color.g,    this->color.b, this->color.a, //
-
-    this->x + width, this->y - height, 0.0f, // right down
-    this->color.r,   this->color.g,    this->color.b, this->color.a, //
-
-    this->x,         this->y,          0.0f, // left up
-    this->color.r,   this->color.g,    this->color.b, this->color.a, //
-
-    this->x + width, this->y,          0.0f, // right up
-    this->color.r,   this->color.g,    this->color.b, this->color.a //
+  float x = (this->x - 0.5) * 2;
+  float y = (this->y - 0.5) * 2;
+  float height = this->height * 2;
+  float width = this->width * 2;
+  this->vertices = { // left down
+                     x,
+                     y - height,
+                     0.0f,
+                     this->color.r,
+                     this->color.g,
+                     this->color.b,
+                     this->color.a,
+                     // right down
+                     x + width,
+                     y - height,
+                     0.0f,
+                     this->color.r,
+                     this->color.g,
+                     this->color.b,
+                     this->color.a,
+                     // left up
+                     x,
+                     y,
+                     0.0f,
+                     this->color.r,
+                     this->color.g,
+                     this->color.b,
+                     this->color.a,
+                     // right up
+                     x + width,
+                     y,
+                     0.0f,
+                     this->color.r,
+                     this->color.g,
+                     this->color.b,
+                     this->color.a
   };
   glBindVertexArray(this->vao);
   glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -88,7 +112,7 @@ void Block::set_position(float x, float y) {
 }
 
 void Block::center() {
-  this->set_position(-width / 2, height / 2);
+  this->set_position(0.5 - width / 2, 0.5 + height / 2);
 }
 
 void Block::init_shader() {

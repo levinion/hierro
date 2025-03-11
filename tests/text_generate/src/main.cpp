@@ -4,6 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "hierro/app.h"
 #include "hierro/component/text.h"
+#include "hierro/component/label.h"
 
 int main() {
   auto app = Application::get_instance();
@@ -12,19 +13,21 @@ int main() {
   auto tg = TextGenerater::get_instance();
   tg->init("assets/fonts/LXGWWenKai-Regular.ttf");
 
-  app->on_resize([&](int width, int height) { tg->viewport(width, height); })
-    ->on_update([&] {})
-    ->on_render([&] {
-      auto time = glfwGetTime();
-      tg->draw_text(
-        std::to_string(time),
-        app->window_size().first / 2,
-        app->window_size().second / 2,
-        1,
-        Color::rgb(0, 0, 0)
-      );
+  Label label1, label2;
 
-      tg->draw_text("你好", 25, 25, 1, Color::rgb(0, 0, 0));
+  label2.position = { 0.1, 0.1 };
+
+  app->on_resize([&](int width, int height) { tg->viewport(width, height); })
+    ->on_update([&] {
+      label1.position = { 0.5, 0.5 };
+
+      auto time = glfwGetTime();
+      label1.content = std::to_string(time);
+      label2.content = "你好";
+    })
+    ->on_render([&] {
+      label1.draw();
+      label2.draw();
     })
     ->run();
 }

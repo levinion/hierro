@@ -51,9 +51,6 @@ void TextGenerater::init_freetype(std::string font) {
     this->add_character(c);
     // FT_Render_Glyph(face->glyph, FT_RENDER_MODE_SDF);
   }
-
-  // FT_Done_Face(face);
-  // FT_Done_FreeType(ft);
 }
 
 void TextGenerater::init_shader() {
@@ -94,11 +91,17 @@ void TextGenerater::init_buffer() {
 
 void TextGenerater::draw_text(
   std::string text,
-  float x,
-  float y,
+  std::pair<float, float> position,
+  std::pair<float, float> size,
+  float line_spacing,
   float scale,
   Color color
 ) {
+  // relative position to real position
+  auto window_size = Application::get_instance()->window_size();
+  auto x = position.first * window_size.first;
+  auto y = position.second * window_size.second;
+
   // activate corresponding render state
   this->shader.use();
   glUniform3f(
@@ -126,6 +129,19 @@ void TextGenerater::draw_text(
 
     float w = ch.size.x * scale;
     float h = ch.size.y * scale;
+
+    // wrap line
+    if (ypos < (position.second - size.second) * window_size.second) {
+      break;
+    }
+    if (xpos + w > (position.first + size.first) * window_size.first) {
+      x = position.first * window_size.first;
+      y -= h * line_spacing;
+
+      xpos = x + ch.bearing.x * scale;
+      ypos = y - (ch.size.y - ch.bearing.y) * scale;
+    }
+
     // update VBO for each character
     float vertices[6][4] = { { xpos, ypos + h, 0.0f, 0.0f },
                              { xpos, ypos, 0.0f, 1.0f },
@@ -195,4 +211,9 @@ void TextGenerater::add_character(char32_t c) {
     (unsigned int)face->glyph->advance.x
   };
   this->character_table.insert(std::pair<char32_t, Character>(c, character));
+}
+
+void TextGenerater::destroy() {
+  FT_Done_Face(this->face);
+  FT_Done_FreeType(this->ft);
 }

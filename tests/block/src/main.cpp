@@ -14,11 +14,11 @@ int main() {
   app->on_resize([](int width, int height) {})
     ->on_update([&] {
       auto time = glfwGetTime();
-      auto timemagic = std::abs(std::sin(time));
+      auto timemagic = std::abs(std::sin(time)); // 0-1
       block.update([&](auto self) {
         self->width = timemagic;
         self->color = Color::rgba(timemagic, timemagic, timemagic, timemagic);
-        self->set_position((timemagic - 0.5) * 2, (timemagic - 0.5) * 2);
+        self->set_position(timemagic, timemagic);
       });
     })
     ->on_render([&] {

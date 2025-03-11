@@ -12,10 +12,10 @@ public:
   std::vector<unsigned int> indices;
   Shader shader;
 
-  float width = 0.5;
-  float height = 0.5;
-  float x = -width / 2;
-  float y = height / 2;
+  float width = 0.25;
+  float height = 0.25;
+  float x = 0.5 - width / 2;
+  float y = 0.5 + height / 2;
   Color color = Color::rgb(0.5, 0.5, 0.5);
 
   Block();

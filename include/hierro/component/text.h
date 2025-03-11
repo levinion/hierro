@@ -17,7 +17,15 @@ class TextGenerater {
 public:
   static TextGenerater* get_instance();
   void init(std::string font);
-  void draw_text(std::string text, float x, float y, float scale, Color color);
+  void draw_text(
+    std::string text,
+    std::pair<float, float> position,
+    std::pair<float, float> size,
+    float line_spacing,
+    float scale,
+    Color color
+  );
+  void destroy();
   void viewport(float x, float y);
 
 private:
