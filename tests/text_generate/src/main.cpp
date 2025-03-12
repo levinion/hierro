@@ -24,6 +24,7 @@ int main() {
       auto time = glfwGetTime();
       label1.content = std::to_string(time);
       label2.content = "你好";
+      return true;
     })
     ->on_render([&] {
       label1.draw();

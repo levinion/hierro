@@ -31,7 +31,7 @@ Application::on_key(std::function<void(int, int, int, int)> callback) {
   return this;
 }
 
-Application* Application::on_update(std::function<void()> callback) {
+Application* Application::on_update(std::function<bool()> callback) {
   this->update_callback = callback;
   return this;
 }

@@ -20,6 +20,7 @@ int main() {
         self->color = Color::rgba(timemagic, timemagic, timemagic, timemagic);
         self->set_position(timemagic, timemagic);
       });
+      return true;
     })
     ->on_render([&] {
       block.draw();

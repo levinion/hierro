@@ -19,7 +19,7 @@ public:
 
   Application* on_resize(std::function<void(int, int)> callback);
   Application* on_key(std::function<void(int, int, int, int)> callback);
-  Application* on_update(std::function<void()>);
+  Application* on_update(std::function<bool()>);
   Application* on_render(std::function<void()>);
 
   std::pair<int, int> window_size();
@@ -47,6 +47,6 @@ private:
   std::function<void(int, int)> resize_callback = [](int height, int width) {};
   std::function<void(int, int, int, int)> key_callback =
     [](int key, int scancode, int action, int mod) {};
-  std::function<void()> update_callback = [] {};
+  std::function<bool()> update_callback = [] { return true; };
   std::function<void()> render_callback = [] {};
 };

@@ -48,8 +48,9 @@ HierroResult Application::init() {
 }
 
 void Application::run() {
-  while (this->update()) {
-    this->render();
+  while (!glfwWindowShouldClose(window)) {
+    if (this->update())
+      this->render();
   }
   this->destroy();
 }
@@ -57,8 +58,7 @@ void Application::run() {
 bool Application::update() {
   glfwPollEvents();
   glfwSwapBuffers(window);
-  this->update_callback();
-  return !glfwWindowShouldClose(window);
+  return this->update_callback();
 }
 
 void Application::render() {
