@@ -28,7 +28,7 @@ HierroResult<void> TextGenerater::init(std::string font, unsigned int size) {
   try(this->init_freetype(font));
   try(this->init_shader());
   try(this->init_buffer());
-  return HierroResult<void>::ok();
+  return ok();
 }
 
 HierroResult<void> TextGenerater::init_freetype(std::string font) {
@@ -76,7 +76,7 @@ HierroResult<void> TextGenerater::init_shader() {
     GL_FALSE,
     glm::value_ptr(projection)
   );
-  return ok<HierroError>();
+  return ok();
 }
 
 HierroResult<void> TextGenerater::init_buffer() {

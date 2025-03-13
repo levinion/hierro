@@ -19,5 +19,3 @@ Color Color::rgb(float r, float g, float b) {
 };
 
 Color::Color() {};
-
-Color::~Color() {};
