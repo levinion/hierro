@@ -1,21 +1,28 @@
 #pragma once
 #include <cstdlib>
-#include <optional>
+#include <expected>
+#include <string>
 
-enum HierroError { GLADERROR = 1 };
+enum class HierroError { GLADERROR };
 
+template<typename T>
 class HierroResult {
+  std::expected<T, HierroError> value;
+
 public:
-  std::optional<HierroError> value;
   void unwrap();
+  void expected(std::string message);
+  static HierroResult<T> ok(T value);
+  static HierroResult<T> err(HierroError err);
+};
 
-  static HierroResult err(HierroError err) {
-    HierroResult r;
-    r.value = err;
-    return r;
-  };
+template<>
+class HierroResult<void> {
+  std::expected<void, HierroError> value;
 
-  static HierroResult ok() {
-    return HierroResult();
-  };
+public:
+  void unwrap();
+  void expected(std::string message);
+  static HierroResult<void> ok();
+  static HierroResult<void> err(HierroError err);
 };

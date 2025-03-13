@@ -22,7 +22,8 @@ TextGenerater* TextGenerater::get_instance() {
   return TextGenerater::instance;
 }
 
-void TextGenerater::init(std::string font) {
+void TextGenerater::init(std::string font, unsigned int size) {
+  this->font_base_size = size;
   this->init_freetype(font);
   this->init_shader();
   this->init_buffer();
@@ -41,7 +42,7 @@ void TextGenerater::init_freetype(std::string font) {
   this->face = face;
   this->ft = ft;
 
-  FT_Set_Pixel_Sizes(this->face, 0, 48);
+  FT_Set_Pixel_Sizes(this->face, 0, this->font_base_size);
 
   FT_Select_Charmap(this->face, ft_encoding_unicode);
 
@@ -93,6 +94,7 @@ void TextGenerater::draw_text(
   std::string text,
   std::pair<float, float> position,
   std::pair<float, float> size,
+  float spacing,
   float line_spacing,
   float scale,
   Color color
@@ -125,21 +127,22 @@ void TextGenerater::draw_text(
     auto ch = this->character_table[*c];
 
     float xpos = x + ch.bearing.x * scale;
-    float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+    float ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
 
     float w = ch.size.x * scale;
     float h = ch.size.y * scale;
 
     // wrap line
-    if (ypos < (position.second - size.second) * window_size.second) {
-      break;
-    }
     if (xpos + w > (position.first + size.first) * window_size.first) {
       x = position.first * window_size.first;
-      y -= h * line_spacing;
-
+      y -= this->line_height()
+        * float(Application::get_instance()->window_size().second)
+        * line_spacing;
       xpos = x + ch.bearing.x * scale;
-      ypos = y - (ch.size.y - ch.bearing.y) * scale;
+      ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
+    }
+    if (ypos < (position.second - size.second) * window_size.second) {
+      break;
     }
 
     // update VBO for each character
@@ -159,7 +162,7 @@ void TextGenerater::draw_text(
     // render quad
     glDrawArrays(GL_TRIANGLES, 0, 6);
     // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-    x += (ch.advance >> 6)
+    x += (float(ch.advance >> 6) * spacing)
       * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
   }
   glBindVertexArray(0);
@@ -216,4 +219,9 @@ void TextGenerater::add_character(char32_t c) {
 void TextGenerater::destroy() {
   FT_Done_Face(this->face);
   FT_Done_FreeType(this->ft);
+}
+
+float TextGenerater::line_height() {
+  return this->font_base_size
+    / float(Application::get_instance()->window_size().second);
 }

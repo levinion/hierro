@@ -11,7 +11,7 @@ int main() {
   app->init().unwrap();
 
   auto tg = TextGenerater::get_instance();
-  tg->init("assets/fonts/LXGWWenKai-Regular.ttf");
+  tg->init("assets/fonts/LXGWWenKai-Regular.ttf", 48);
 
   Label label1, label2;
 
@@ -30,5 +30,6 @@ int main() {
       label1.draw();
       label2.draw();
     })
+    ->on_destroy([&] { tg->destroy(); })
     ->run();
 }

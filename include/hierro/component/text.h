@@ -16,17 +16,19 @@ public:
 class TextGenerater {
 public:
   static TextGenerater* get_instance();
-  void init(std::string font);
+  void init(std::string font, unsigned int size);
   void draw_text(
     std::string text,
     std::pair<float, float> position,
     std::pair<float, float> size,
+    float spacing,
     float line_spacing,
     float scale,
     Color color
   );
   void destroy();
   void viewport(float x, float y);
+  float line_height();
 
 private:
   static TextGenerater* instance;
@@ -40,4 +42,5 @@ private:
   unsigned int vbo;
   FT_Library ft;
   FT_Face face;
+  unsigned int font_base_size;
 };

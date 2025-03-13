@@ -10,6 +10,7 @@ void Label::draw() {
     this->content,
     this->position,
     this->size,
+    this->spacing,
     this->line_spacing,
     this->scale,
     this->color

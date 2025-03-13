@@ -40,3 +40,8 @@ Application* Application::on_render(std::function<void()> callback) {
   this->render_callback = callback;
   return this;
 }
+
+Application* Application::on_destroy(std::function<void()> callback) {
+  this->destroy_callback = callback;
+  return this;
+}

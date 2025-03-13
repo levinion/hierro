@@ -11,7 +11,7 @@ class GLFWwindow;
 
 class Application {
 public:
-  HierroResult init();
+  HierroResult<void> init();
   void run();
   bool update();
   void render();
@@ -21,15 +21,17 @@ public:
   Application* on_key(std::function<void(int, int, int, int)> callback);
   Application* on_update(std::function<bool()>);
   Application* on_render(std::function<void()>);
+  Application* on_destroy(std::function<void()>);
 
   std::pair<int, int> window_size();
 
   ~Application();
   static Application* get_instance();
-  std::pair<int, int> version = std::pair(3, 3);
+  std::pair<int, int> gl_version = std::pair(3, 3);
   std::string title;
   std::pair<int, int> size = std::pair(800, 600);
   Color background = Color::rgb(0.2, 0.3, 0.3);
+  bool blend = true;
 
 private:
   Application();
@@ -49,4 +51,5 @@ private:
     [](int key, int scancode, int action, int mod) {};
   std::function<bool()> update_callback = [] { return true; };
   std::function<void()> render_callback = [] {};
+  std::function<void()> destroy_callback = [] {};
 };

@@ -12,10 +12,10 @@ Application* Application::get_instance() {
   return Application::instance;
 }
 
-HierroResult Application::init() {
+HierroResult<void> Application::init() {
   glfwInit();
-  glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, this->version.first);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, this->version.second);
+  glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, this->gl_version.first);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, this->gl_version.second);
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow* window = glfwCreateWindow(
@@ -33,7 +33,7 @@ HierroResult Application::init() {
   glfwSetKeyCallback(window, this->glfw_key_callback);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    return HierroResult::err(HierroError::GLADERROR);
+    return HierroResult<void>::err(HierroError::GLADERROR);
   }
 
   glViewport(0, 0, this->size.first, this->size.second);
@@ -41,10 +41,12 @@ HierroResult Application::init() {
   auto& color = this->background;
   glClearColor(color.r, color.g, color.b, color.a);
 
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
+  if (this->blend) {
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+  }
 
-  return HierroResult::ok();
+  return HierroResult<void>::ok();
 }
 
 void Application::run() {
@@ -67,6 +69,7 @@ void Application::render() {
 }
 
 void Application::destroy() {
+  this->destroy_callback();
   glfwTerminate();
 }
 
