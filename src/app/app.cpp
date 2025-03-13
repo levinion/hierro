@@ -33,7 +33,9 @@ HierroResult<void> Application::init() {
   glfwSetKeyCallback(window, this->glfw_key_callback);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    return HierroResult<void>::err(HierroError::GLADERROR);
+    return HierroResult<void>::err(
+      "GLAD ERROR: glad cannot get load gl proc address."
+    );
   }
 
   glViewport(0, 0, this->size.first, this->size.second);

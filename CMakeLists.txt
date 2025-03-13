@@ -35,3 +35,5 @@ add_subdirectory(./third_party/freetype-2.13.3)
 target_link_libraries(${name} PUBLIC freetype)
 
 target_include_directories(${name} PUBLIC ./third_party/glm/)
+
+target_include_directories(${name} PUBLIC ./third_party/result-cpp/)

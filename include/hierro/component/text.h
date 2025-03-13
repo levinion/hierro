@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include "freetype/freetype.h"
+#include "hierro/error.h"
 #include "hierro/shader.h"
 #include "hierro/color.h"
 
@@ -16,7 +17,7 @@ public:
 class TextGenerater {
 public:
   static TextGenerater* get_instance();
-  void init(std::string font, unsigned int size);
+  HierroResult<void> init(std::string font, unsigned int size);
   void draw_text(
     std::string text,
     std::pair<float, float> position,
@@ -34,10 +35,10 @@ private:
   static TextGenerater* instance;
   std::unordered_map<char32_t, Character> character_table;
   Shader shader;
-  void init_freetype(std::string font);
-  void init_shader();
-  void init_buffer();
-  void add_character(char32_t c);
+  HierroResult<void> init_freetype(std::string font);
+  HierroResult<void> init_shader();
+  HierroResult<void> init_buffer();
+  HierroResult<void> add_character(char32_t c);
   unsigned int vao;
   unsigned int vbo;
   FT_Library ft;

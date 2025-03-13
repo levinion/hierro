@@ -5,6 +5,7 @@
 #include <codecvt>
 #include <glm/glm.hpp>
 #include "hierro/app.h"
+#include "hierro/error.h"
 #include "hierro/shader/text/vertex.h"
 #include "hierro/shader/text/fragment.h"
 #include "hierro/component/text.h"
@@ -22,22 +23,22 @@ TextGenerater* TextGenerater::get_instance() {
   return TextGenerater::instance;
 }
 
-void TextGenerater::init(std::string font, unsigned int size) {
+HierroResult<void> TextGenerater::init(std::string font, unsigned int size) {
   this->font_base_size = size;
-  this->init_freetype(font);
-  this->init_shader();
-  this->init_buffer();
+  try(this->init_freetype(font));
+  try(this->init_shader());
+  try(this->init_buffer());
+  return HierroResult<void>::ok();
 }
 
-void TextGenerater::init_freetype(std::string font) {
+HierroResult<void> TextGenerater::init_freetype(std::string font) {
   FT_Library ft;
   if (FT_Init_FreeType(&ft))
-    std::cout << "ERROR::FREETYPE: Could not init FreeType Library"
-              << std::endl;
+    return err("ERROR::FREETYPE: Could not init FreeType Library");
 
   FT_Face face;
   if (FT_New_Face(ft, font.c_str(), 0, &face))
-    std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+    return err("ERROR::FREETYPE: Failed to load font");
 
   this->face = face;
   this->ft = ft;
@@ -52,9 +53,10 @@ void TextGenerater::init_freetype(std::string font) {
     this->add_character(c);
     // FT_Render_Glyph(face->glyph, FT_RENDER_MODE_SDF);
   }
+  return ok();
 }
 
-void TextGenerater::init_shader() {
+HierroResult<void> TextGenerater::init_shader() {
   auto vertex = (const char*)_text_vertex_shader_code;
   auto fragment = (const char*)_text_fragment_shader_code;
   auto shader = Shader(vertex, fragment);
@@ -74,9 +76,10 @@ void TextGenerater::init_shader() {
     GL_FALSE,
     glm::value_ptr(projection)
   );
+  return ok<HierroError>();
 }
 
-void TextGenerater::init_buffer() {
+HierroResult<void> TextGenerater::init_buffer() {
   // init vao
   glGenVertexArrays(1, &this->vao);
   // init vbo
@@ -88,6 +91,7 @@ void TextGenerater::init_buffer() {
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+  return ok();
 }
 
 void TextGenerater::draw_text(
@@ -181,10 +185,10 @@ void TextGenerater::viewport(float x, float y) {
   );
 }
 
-void TextGenerater::add_character(char32_t c) {
+HierroResult<void> TextGenerater::add_character(char32_t c) {
   if (FT_Load_Char(this->face, c, FT_LOAD_RENDER)) {
     std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-    return;
+    return ok();
   }
 
   unsigned int texture;
@@ -214,6 +218,7 @@ void TextGenerater::add_character(char32_t c) {
     (unsigned int)face->glyph->advance.x
   };
   this->character_table.insert(std::pair<char32_t, Character>(c, character));
+  return ok();
 }
 
 void TextGenerater::destroy() {
