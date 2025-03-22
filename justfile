@@ -1,5 +1,3 @@
-name := `cat tests/build/CMakeCache.txt | grep CMAKE_PROJECT_NAME | awk -F '=' '{print $2}'` 
-
 init:
   cmake -B build
 

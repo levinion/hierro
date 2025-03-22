@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include "hierro/component/block.h"
+#include "hierro/app.h"
 #include "hierro/shader/block/vertex.h"
 #include "hierro/shader/block/fragment.h"
 #include "hierro/shader.h"
@@ -19,23 +20,38 @@ Block::Block() {
   this->update_indices();
 
   // update layout
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
+  // position: x, y
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(
-    1,
-    4,
-    GL_FLOAT,
-    GL_FALSE,
-    7 * sizeof(float),
-    (void*)(3 * sizeof(float))
-  );
-  glEnableVertexAttribArray(1);
 }
 
 void Block::draw() {
   glBindVertexArray(this->vao);
   this->shader.use();
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+  // update uniforms
+  glUniform1f(glGetUniformLocation(this->shader.id(), "radius"), this->radius);
+  glUniform4f(
+    glGetUniformLocation(this->shader.id(), "color"),
+    this->color.r,
+    this->color.g,
+    this->color.b,
+    this->color.a
+  );
+
+  auto size = Application::get_instance()->window_size();
+  glUniform2f(
+    glGetUniformLocation(this->shader.id(), "size"),
+    this->width * size.first,
+    this->height * size.second
+  );
+
+  glUniform2f(
+    glGetUniformLocation(this->shader.id(), "position"),
+    this->x * size.first,
+    this->y * size.second
+  );
 }
 
 void Block::update_vertices() {
@@ -43,38 +59,19 @@ void Block::update_vertices() {
   float y = (this->y - 0.5) * 2;
   float height = this->height * 2;
   float width = this->width * 2;
-  this->vertices = { // left down
-                     x,
-                     y - height,
-                     0.0f,
-                     this->color.r,
-                     this->color.g,
-                     this->color.b,
-                     this->color.a,
-                     // right down
-                     x + width,
-                     y - height,
-                     0.0f,
-                     this->color.r,
-                     this->color.g,
-                     this->color.b,
-                     this->color.a,
-                     // left up
-                     x,
-                     y,
-                     0.0f,
-                     this->color.r,
-                     this->color.g,
-                     this->color.b,
-                     this->color.a,
-                     // right up
-                     x + width,
-                     y,
-                     0.0f,
-                     this->color.r,
-                     this->color.g,
-                     this->color.b,
-                     this->color.a
+  this->vertices = {
+    // left down
+    x,
+    y - height,
+    // right down
+    x + width,
+    y - height,
+    // left up
+    x,
+    y,
+    // right up
+    x + width,
+    y,
   };
   glBindVertexArray(this->vao);
   glBindBuffer(GL_ARRAY_BUFFER, this->vbo);

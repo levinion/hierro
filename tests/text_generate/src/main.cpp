@@ -5,6 +5,7 @@
 #include "hierro/app.h"
 #include "hierro/component/text.h"
 #include "hierro/component/label.h"
+#include "hierro/utils/color.h"
 
 int main() {
   auto app = Application::get_instance();
@@ -15,7 +16,11 @@ int main() {
 
   Label label1, label2;
 
+  label1.color = Color::rgb(1, 0, 1);
+
   label2.position = { 0.1, 0.1 };
+  label2.color = Color::rgb(1, 1, 0);
+  label2.content = "你好";
 
   app->on_resize([&](int width, int height) { tg->viewport(width, height); })
     ->on_update([&] {
@@ -23,7 +28,6 @@ int main() {
 
       auto time = glfwGetTime();
       label1.content = std::to_string(time);
-      label2.content = "你好";
       return true;
     })
     ->on_render([&] {

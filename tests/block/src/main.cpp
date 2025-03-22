@@ -17,7 +17,8 @@ int main() {
       auto timemagic = std::abs(std::sin(time)); // 0-1
       block.update([&](auto self) {
         self->width = timemagic;
-        self->color = Color::rgba(timemagic, timemagic, timemagic, timemagic);
+        self->color = Color::rgba(1, 1, 0, timemagic);
+        self->radius = timemagic;
         self->set_position(timemagic, timemagic);
       });
       return true;

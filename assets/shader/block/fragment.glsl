@@ -1,21 +1,16 @@
 #version 330 core
-out vec4 fragColor;
+uniform vec2 size;
+uniform float radius;
+uniform vec4 color;
+uniform vec2 position;
 
-in vec2 position;
-in vec2 size;
-in float radius;
-in vec4 color;
-
-float roundedBoxSDF(vec2 CenterPosition, vec2 Size, float Radius) {
-    return length(max(abs(CenterPosition) - Size + Radius, 0.0)) - Radius;
+float roundedBoxSDF(vec2 p, vec2 b, float r) {
+    return length(max(abs(p) - b + r, 0.0)) - r;
 }
 void main() {
-    float edgeSoftness = 1.0f;
-    float r = radius * 30.0f;
-    float distance = roundedBoxSDF(gl_FragCoord.xy - location - (size / 2.0f), size / 2.0f, r);
-    float smoothedAlpha = 1.0f - smoothstep(0.0f, edgeSoftness * 2.0f, distance);
-
-    vec4 quadColor = mix(vec4(1.0f, 1.0f, 1.0f, 1.0f), color, smoothedAlpha);
-
-    fragColor = quadColor;
+    vec2 center = vec2(position.x + size.x / 2.0, position.y - size.y / 2.0);
+    float distance = roundedBoxSDF(gl_FragCoord.xy - center, size / 2.0, radius * 100.0);
+    float alpha = (1.0 - smoothstep(0.0f, 2.0f, distance)) * color.w;
+    vec4 mixed_color = vec4(color.xyz, alpha);
+    gl_FragColor = mix(mixed_color, color, alpha / color.w);
 }
