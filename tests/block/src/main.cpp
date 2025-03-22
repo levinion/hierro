@@ -2,7 +2,7 @@
 #include <ctime>
 #include "GLFW/glfw3.h"
 #include "hierro/app.h"
-#include "hierro/color.h"
+#include "hierro/utils/color.h"
 #include "hierro/component/block.h"
 
 int main() {

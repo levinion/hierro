@@ -4,7 +4,7 @@
 #include "freetype/freetype.h"
 #include "hierro/error.h"
 #include "hierro/shader.h"
-#include "hierro/color.h"
+#include "hierro/utils/color.h"
 
 class Character {
 public:

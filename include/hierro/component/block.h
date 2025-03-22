@@ -1,6 +1,6 @@
 #include <functional>
 #include <vector>
-#include "hierro/color.h"
+#include "hierro/utils/color.h"
 #include "hierro/shader.h"
 
 class Block {
@@ -16,6 +16,9 @@ public:
   float height = 0.25;
   float x = 0.5 - width / 2;
   float y = 0.5 + height / 2;
+
+  float radius = 1.0f;
+
   Color color = Color::rgb(0.5, 0.5, 0.5);
 
   Block();

@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 #include "GLFW/glfw3.h"
-#include "color.h"
+#include "hierro/utils/color.h"
 #include "hierro/error.h"
 
 class GLFWwindow;

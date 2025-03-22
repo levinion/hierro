@@ -1,5 +1,5 @@
 #include <string>
-#include "hierro/color.h"
+#include "hierro/utils/color.h"
 
 class Label {
 public:

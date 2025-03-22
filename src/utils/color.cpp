@@ -1,4 +1,4 @@
-#include "hierro/color.h"
+#include "hierro/utils/color.h"
 
 Color Color::rgba(float r, float g, float b, float a) {
   Color color;
