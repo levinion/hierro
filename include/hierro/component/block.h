@@ -1,3 +1,5 @@
+#pragma once
+
 #include <functional>
 #include <vector>
 #include "hierro/utils/color.h"
