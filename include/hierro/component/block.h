@@ -1,11 +1,12 @@
 #pragma once
 
-#include <functional>
+#include <memory>
 #include <vector>
 #include "hierro/utils/color.h"
 #include "hierro/shader.h"
+#include "hierro/component/component.h"
 
-class Block {
+class Block: public Component {
 public:
   unsigned int vbo;
   unsigned int vao;
@@ -14,21 +15,25 @@ public:
   std::vector<unsigned int> indices;
   Shader shader;
 
-  float width = 0.25;
-  float height = 0.25;
-  float x = 0.5 - width / 2;
-  float y = 0.5 + height / 2;
-
   float radius = 1.0f;
 
   Color color = Color::rgb(0.5, 0.5, 0.5);
 
   Block();
-  void update(std::function<void(Block*)>&& f);
-  void draw();
-  void set_position(float x, float y);
-  void set_size(float x, float y);
-  void center();
+
+  // impl Component
+  float width = 0.25;
+  float height = 0.25;
+  float x = 0.5 - width / 2;
+  float y = 0.5 + height / 2;
+  std::vector<std::unique_ptr<Component>> children;
+  Component* father = nullptr;
+
+  virtual void draw() override;
+  virtual std::pair<float*, float*> get_position() override;
+  virtual std::pair<float*, float*> get_size() override;
+  virtual std::vector<std::unique_ptr<Component>>* get_children() override;
+  virtual Component** get_father() override;
 
 private:
   void update_vertices();

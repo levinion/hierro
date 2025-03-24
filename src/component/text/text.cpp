@@ -104,9 +104,8 @@ void TextGenerater::draw_text(
   Color color
 ) {
   // relative position to real position
-  auto window_size = Application::get_instance()->window_size();
-  auto x = position.first * window_size.first;
-  auto y = position.second * window_size.second;
+  auto x = position.first;
+  auto y = position.second;
 
   // activate corresponding render state
   this->shader.use();
@@ -137,15 +136,15 @@ void TextGenerater::draw_text(
     float h = ch.size.y * scale;
 
     // wrap line
-    if (xpos + w > (position.first + size.first) * window_size.first) {
-      x = position.first * window_size.first;
+    if (xpos + w > position.first + size.first) {
+      x = position.first;
       y -= this->line_height()
         * float(Application::get_instance()->window_size().second)
         * line_spacing;
       xpos = x + ch.bearing.x * scale;
       ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
     }
-    if (ypos < (position.second - size.second) * window_size.second) {
+    if (ypos < position.second - size.second) {
       break;
     }
 

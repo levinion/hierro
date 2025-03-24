@@ -2,6 +2,7 @@
 #include "hierro/app.h"
 #include <GLFW/glfw3.h>
 #include <hierro/error.h>
+#include "hierro/component/component.h"
 
 Application* Application::instance = nullptr;
 
@@ -65,6 +66,7 @@ bool Application::update() {
 
 void Application::render() {
   glClear(GL_COLOR_BUFFER_BIT);
+  this->draw();
   this->render_callback();
 }
 
@@ -82,3 +84,9 @@ std::pair<int, int> Application::window_size() {
   glfwGetWindowSize(this->window, &width, &height);
   return { width, height };
 }
+
+void Application::draw() {
+  this->draw_children();
+}
+
+IMPL_COMPONENT(Application);

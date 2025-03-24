@@ -1,7 +1,6 @@
 #include <cmath>
 #include <ctime>
 #include <string>
-#include "GLFW/glfw3.h"
 #include "hierro/app.h"
 #include "hierro/component/text.h"
 #include "hierro/component/label.h"
@@ -17,23 +16,15 @@ int main() {
   Label label1, label2;
 
   label1.color = Color::rgb(1, 0, 1);
+  label1.set_position(0.1, 0.1);
+  label1.content = "Hello";
 
-  label2.position = { 0.1, 0.1 };
+  label2.set_position(0.1, 0.9);
   label2.color = Color::rgb(1, 1, 0);
   label2.content = "你好";
 
+  app->add_child(&label1)->add_child(&label2);
   app->on_resize([&](int width, int height) { tg->viewport(width, height); })
-    ->on_update([&] {
-      label1.position = { 0.5, 0.5 };
-
-      auto time = glfwGetTime();
-      label1.content = std::to_string(time);
-      return true;
-    })
-    ->on_render([&] {
-      label1.draw();
-      label2.draw();
-    })
     ->on_destroy([&] { tg->destroy(); })
     ->run();
 }

@@ -1,6 +1,8 @@
 #include <glad/glad.h>
+#include <utility>
 #include "hierro/component/block.h"
 #include "hierro/app.h"
+#include "hierro/component/component.h"
 #include "hierro/shader/block/vertex.h"
 #include "hierro/shader/block/fragment.h"
 #include "hierro/shader.h"
@@ -15,18 +17,21 @@ Block::Block() {
 
   this->init_shader();
 
-  // init vertices and indices
-  this->update_vertices();
+  // indices
   this->update_indices();
 
   // update layout
   // position: x, y
+  glBindVertexArray(this->vao);
+  glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 }
 
 void Block::draw() {
-  glBindVertexArray(this->vao);
+  // send vertices before drawing
+  this->update_vertices();
+
   this->shader.use();
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -40,25 +45,37 @@ void Block::draw() {
     this->color.a
   );
 
-  auto size = Application::get_instance()->window_size();
+  // size of block
+  auto size = this->absolute_size();
   glUniform2f(
     glGetUniformLocation(this->shader.id(), "size"),
-    this->width * size.first,
-    this->height * size.second
+    size.first,
+    size.second
   );
 
+  // position of left-upper vertex
+  auto position = this->absolute_position();
   glUniform2f(
     glGetUniformLocation(this->shader.id(), "position"),
-    this->x * size.first,
-    this->y * size.second
+    position.first,
+    position.second
   );
+
+  glBindVertexArray(this->vao);
 }
 
 void Block::update_vertices() {
-  float x = (this->x - 0.5) * 2;
-  float y = (this->y - 0.5) * 2;
-  float height = this->height * 2;
-  float width = this->width * 2;
+  auto window_size = Application::get_instance()->window_size();
+  auto absolute_position = this->absolute_position();
+  auto absolute_size = this->absolute_size();
+
+  // 0~1 -> -1~1
+  float x = absolute_position.first / window_size.first * 2 - 1;
+  float y = absolute_position.second / window_size.second * 2 - 1;
+  // 0~1 -> 0~2
+  float width = absolute_size.first / window_size.first * 2;
+  float height = absolute_size.second / window_size.second * 2;
+
   this->vertices = {
     // left down
     x,
@@ -73,6 +90,7 @@ void Block::update_vertices() {
     x + width,
     y,
   };
+
   glBindVertexArray(this->vao);
   glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
   glBufferData(
@@ -98,23 +116,11 @@ void Block::update_indices() {
   );
 }
 
-void Block::update(std::function<void(Block*)>&& f) {
-  f(this);
-  this->update_vertices();
-}
-
-void Block::set_position(float x, float y) {
-  this->x = x;
-  this->y = y;
-}
-
-void Block::center() {
-  this->set_position(0.5 - width / 2, 0.5 + height / 2);
-}
-
 void Block::init_shader() {
   auto vertex_shader_code = (const char*)_block_vertex_shader_code;
   auto fragment_shader_code = (const char*)_block_fragment_shader_code;
 
   this->shader = Shader(vertex_shader_code, fragment_shader_code);
 }
+
+IMPL_COMPONENT(Block)
