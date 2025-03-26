@@ -97,5 +97,5 @@ private:
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
 
   void search_focus(float x, float y);
-  Component* focused;
+  Component* focused = this; // focused should never be nullptr
 };

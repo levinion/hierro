@@ -116,8 +116,7 @@ void __range_tree(Component* node, float x, float y, Component*& focused) {
 }
 
 void Application::search_focus(float x, float y) {
-  Component* focused = nullptr;
-  // skip Application, so that focused will be either nullptr or other component
+  Component* focused = this;
   for (auto& child : this->get_children()) {
     __range_tree(child.get(), x, y, focused);
   }

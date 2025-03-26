@@ -1,3 +1,4 @@
+#include <cassert>
 #include <functional>
 #include "GLFW/glfw3.h"
 #include "hierro/app.h"
@@ -24,9 +25,8 @@ void Application::glfw_key_callback(
   int mod
 ) {
   auto app = Application::get_instance();
-  if (app->focused) {
-    app->focused->get_key_callback()(key, scancode, action, mod);
-  }
+  assert(app->focused);
+  app->focused->get_key_callback()(key, scancode, action, mod);
 }
 
 void Application::glfw_mouse_button_callabck(
@@ -36,20 +36,16 @@ void Application::glfw_mouse_button_callabck(
   int mods
 ) {
   auto app = Application::get_instance();
-  // find the most above component and it should action on the event;
-  // and hook on app itself should always action on the event as a global hook;
-
-  // set focused element
+  assert(app->focused);
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
     auto [x, y] = app->cursor_pos();
     app->search_focus(x, y);
+    //TODO: call on_focus hook here
   }
   // trigger callback of focused element
   if (app->focused) {
     app->focused->get_click_callback()(button, action, mods);
   }
-  // trigger global callback
-  app->get_click_callback()(button, action, mods);
 }
 
 void Application::glfw_char_callback(
