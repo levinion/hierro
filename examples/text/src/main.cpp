@@ -1,8 +1,8 @@
 #include <cmath>
 #include <ctime>
 #include <string>
-#include "hierro/app.h"
-#include "hierro/component/label.h"
+#include "hierro/app.hpp"
+#include "hierro/component/label.hpp"
 
 int main() {
   auto app = Application::get_instance();

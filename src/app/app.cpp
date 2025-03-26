@@ -1,10 +1,10 @@
 #include <glad/glad.h>
-#include "hierro/app.h"
+#include "hierro/app.hpp"
 #include <GLFW/glfw3.h>
-#include <hierro/error.h>
+#include <hierro/error.hpp>
 #include <text_encoding>
-#include "hierro/component/component.h"
-#include "hierro/utils/data.h"
+#include "hierro/component/component.hpp"
+#include "hierro/utils/data.hpp"
 
 Application* Application::instance = nullptr;
 

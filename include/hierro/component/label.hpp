@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "hierro/utils/data.h"
-#include "hierro/component/component.h"
+#include "hierro/utils/data.hpp"
+#include "hierro/component/component.hpp"
 
 class Label: public Component {
 public:

@@ -1,7 +1,7 @@
 #include <cassert>
 #include <functional>
 #include "GLFW/glfw3.h"
-#include "hierro/app.h"
+#include "hierro/app.hpp"
 
 void Application::glfw_frame_buffer_size_callback(
   GLFWwindow* window,

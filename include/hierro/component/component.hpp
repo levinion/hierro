@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
-#include "hierro/utils/data.h"
+#include "hierro/utils/data.hpp"
 
 class Component {
 public:

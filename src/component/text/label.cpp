@@ -1,6 +1,6 @@
-#include "hierro/component/label.h"
-#include "hierro/component/component.h"
-#include "hierro/component/text.h"
+#include "hierro/component/label.hpp"
+#include "hierro/component/component.hpp"
+#include "hierro/component/text.hpp"
 
 Label::Label() {}
 

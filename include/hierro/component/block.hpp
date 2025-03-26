@@ -3,9 +3,9 @@
 #include <functional>
 #include <memory>
 #include <vector>
-#include "hierro/shader.h"
-#include "hierro/component/component.h"
-#include "hierro/utils/data.h"
+#include "hierro/shader.hpp"
+#include "hierro/component/component.hpp"
+#include "hierro/utils/data.hpp"
 
 class Block: public Component {
 public:

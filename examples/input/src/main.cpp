@@ -2,10 +2,10 @@
 #include <cstdlib>
 #include <ctime>
 #include "GLFW/glfw3.h"
-#include "hierro/app.h"
-#include "hierro/component/block.h"
-#include "hierro/component/label.h"
-#include "hierro/utils/log.h"
+#include "hierro/app.hpp"
+#include "hierro/component/block.hpp"
+#include "hierro/component/label.hpp"
+#include "hierro/utils/log.hpp"
 
 int main() {
   auto app = Application::get_instance();

@@ -3,8 +3,8 @@
 #include <ctime>
 #include <random>
 #include "GLFW/glfw3.h"
-#include "hierro/app.h"
-#include "hierro/component/block.h"
+#include "hierro/app.hpp"
+#include "hierro/component/block.hpp"
 
 int main() {
   std::random_device rd;

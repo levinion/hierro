@@ -1,4 +1,4 @@
-#include <hierro/error.h>
+#include <hierro/error.hpp>
 
 HierroResult<void> ok() {
   return HierroResult<void>::ok();

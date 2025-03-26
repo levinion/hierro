@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include "hierro/shader.h"
+#include "hierro/shader.hpp"
 #include <GL/glext.h>
 #include <cstddef>
 

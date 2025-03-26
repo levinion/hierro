@@ -4,9 +4,9 @@
 #include <string>
 #include <unordered_map>
 #include "freetype/freetype.h"
-#include "hierro/error.h"
-#include "hierro/shader.h"
-#include "hierro/utils/data.h"
+#include "hierro/error.hpp"
+#include "hierro/shader.hpp"
+#include "hierro/utils/data.hpp"
 
 class Character {
 public:

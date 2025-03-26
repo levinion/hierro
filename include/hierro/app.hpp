@@ -6,10 +6,10 @@
 #include <utility>
 #include <vector>
 #include "GLFW/glfw3.h"
-#include "hierro/component/component.h"
-#include "hierro/component/text.h"
-#include "hierro/error.h"
-#include "hierro/utils/data.h"
+#include "hierro/component/component.hpp"
+#include "hierro/component/text.hpp"
+#include "hierro/error.hpp"
+#include "hierro/utils/data.hpp"
 
 class GLFWwindow;
 
