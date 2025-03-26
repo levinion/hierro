@@ -17,6 +17,8 @@ public:
   virtual Component*& get_father() = 0;
   // hook api
   virtual std::function<void(int, int, int)>& get_click_callback() = 0;
+  virtual std::function<void(int, int, int, int)>& get_key_callback() = 0;
+  virtual std::function<void(unsigned int)>& get_input_callback() = 0;
 
   virtual ~Component() = default;
 
@@ -82,6 +84,21 @@ public:
     click_callback = callback;
   }
 
+  // @param int key
+  // @param int scancode
+  // @param int action
+  // @param int mod
+  virtual void on_key(std::function<void(int, int, int, int)> callback) {
+    auto& key_callback = this->get_key_callback();
+    key_callback = callback;
+  }
+
+  // param unsigned int codepoint
+  virtual void on_input(std::function<void(unsigned int)> callback) {
+    auto& input_callback = this->get_input_callback();
+    input_callback = callback;
+  }
+
   virtual bool is_hitted(float x, float y) {
     auto [px, py] = this->absolute_position();
     auto [width, height] = this->absolute_size();
@@ -99,4 +116,6 @@ public:
   GET_REF(Size, T, size) \
   GET_REF(std::vector<std::unique_ptr<Component>>, T, children) \
   GET_REF(Component*, T, father) \
-  GET_REF(std::function<void(int, int, int)>, T, click_callback)
+  GET_REF(std::function<void(int, int, int)>, T, click_callback) \
+  GET_REF(std::function<void(int, int, int, int)>, T, key_callback) \
+  GET_REF(std::function<void(unsigned int)>, T, input_callback)

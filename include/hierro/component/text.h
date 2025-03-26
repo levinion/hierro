@@ -21,10 +21,11 @@ public:
   static TextGenerater* get_instance();
   HierroResult<void> init(std::string font, unsigned int size);
   void draw_text(
-    std::string text,
+    std::wstring text,
     Position position,
     Size size,
     bool wrap,
+    bool overflow,
     float spacing,
     float line_spacing,
     float scale,

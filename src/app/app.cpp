@@ -54,6 +54,7 @@ void Application::prepare() {
   glfwSetFramebufferSizeCallback(window, this->glfw_frame_buffer_size_callback);
   glfwSetKeyCallback(window, this->glfw_key_callback);
   glfwSetMouseButtonCallback(window, this->glfw_mouse_button_callabck);
+  glfwSetCharCallback(window, this->glfw_char_callback);
 }
 
 void Application::run() {
@@ -121,4 +122,8 @@ void Application::search_focus(float x, float y) {
     __range_tree(child.get(), x, y, focused);
   }
   this->focused = focused;
+}
+
+void Application::set_focus(Component* component) {
+  this->focused = component;
 }

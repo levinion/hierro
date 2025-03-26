@@ -1,12 +1,12 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <random>
 #include "GLFW/glfw3.h"
 #include "hierro/app.h"
 #include "hierro/component/block.h"
 #include "hierro/component/label.h"
 #include "hierro/component/text.h"
+#include "hierro/utils/log.h"
 
 int main() {
   auto app = Application::get_instance();
@@ -16,11 +16,40 @@ int main() {
   tg->init("assets/fonts/LXGWWenKai-Regular.ttf", 48);
 
   Block container;
-  Label content;
+  Label input;
 
-  content.content = "place holder";
+  container.set_size(0.6, 0.3);
+  container.center();
 
-  container.add_child(&content);
+  input.set_position(0.1, 1);
+  input.set_size(0.8, 1);
+
+  input.content = L"";
+  container.on_input([&](unsigned int codepoint) {
+    LOG("codepoint get", codepoint);
+    input.content.push_back(codepoint);
+  });
+
+  container.on_key([&](int key, int scancode, int action, int mod) {
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+      if (key == GLFW_KEY_BACKSPACE) {
+        LOG("press backspace");
+        if (!input.content.empty()) {
+          input.content.pop_back();
+        }
+      }
+    }
+
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+      LOG("press enter");
+      input.content.push_back('\n');
+    }
+  });
+
+  // never set focus to the text element
+  app->set_focus(&container);
+
+  container.add_child(&input);
   app->add_child(&container);
 
   app->on_resize([&](int width, int height) { tg->viewport(width, height); });

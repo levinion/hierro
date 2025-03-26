@@ -10,12 +10,13 @@ class Label: public Component {
 public:
   Label();
 
-  Label(std::string content) : content(content) {}
+  Label(std::wstring content) : content(content) {}
 
-  std::string content;
+  std::wstring content;
   float scale = 1.0f;
   Color color = Color(1, 1, 1);
   bool wrap = true;
+  bool overflow = true;
   float spacing = 1.0f;
   float line_spacing = 1.5f;
 
@@ -24,7 +25,6 @@ public:
   Position position = { 0.0f, 1.0f };
   std::vector<std::unique_ptr<Component>> children;
   Component* father = nullptr;
-  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
 
   virtual void draw() override;
   virtual Position& get_position() override;
@@ -32,6 +32,17 @@ public:
   virtual std::vector<std::unique_ptr<Component>>& get_children() override;
   virtual Component*& get_father() override;
   virtual std::function<void(int, int, int)>& get_click_callback() override;
+  virtual std::function<void(int, int, int, int)>& get_key_callback() override;
+  virtual std::function<void(unsigned int)>& get_input_callback() override;
+
+  // label should never be treated as a normal ui element, since its size cannot got easily, and it should be binded with a container(such as block)
+  virtual bool is_hitted(float x, float y) override {
+    return false;
+  }
 
 private:
+  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
+  std::function<void(int, int, int, int)> key_callback =
+    [](int, int, int, int) {};
+  std::function<void(unsigned int)> input_callback = [](unsigned int) {};
 };

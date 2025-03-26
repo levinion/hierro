@@ -12,6 +12,7 @@ void Label::draw() {
     this->absolute_position(),
     this->absolute_size(),
     this->wrap,
+    this->overflow,
     this->spacing,
     this->line_spacing,
     this->scale,

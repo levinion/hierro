@@ -1,4 +1,5 @@
 #include <functional>
+#include "GLFW/glfw3.h"
 #include "hierro/app.h"
 
 void Application::glfw_frame_buffer_size_callback(
@@ -21,7 +22,12 @@ void Application::glfw_key_callback(
   int scancode,
   int action,
   int mod
-) {}
+) {
+  auto app = Application::get_instance();
+  if (app->focused) {
+    app->focused->get_key_callback()(key, scancode, action, mod);
+  }
+}
 
 void Application::glfw_mouse_button_callabck(
   GLFWwindow* window,
@@ -39,11 +45,21 @@ void Application::glfw_mouse_button_callabck(
     app->search_focus(x, y);
   }
   // trigger callback of focused element
-  if (app->focused != nullptr) {
-    (app->focused->get_click_callback())(button, action, mods);
+  if (app->focused) {
+    app->focused->get_click_callback()(button, action, mods);
   }
   // trigger global callback
-  (app->get_click_callback())(button, action, mods);
+  app->get_click_callback()(button, action, mods);
+}
+
+void Application::glfw_char_callback(
+  GLFWwindow* window,
+  unsigned int codepoint
+) {
+  auto app = Application::get_instance();
+  if (app->focused) {
+    app->focused->get_input_callback()(codepoint);
+  }
 }
 
 Application* Application::on_update(std::function<bool()> callback) {

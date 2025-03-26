@@ -2,7 +2,6 @@
 #include <GL/gl.h>
 #include <ft2build.h>
 #include <freetype/freetype.h>
-#include <codecvt>
 #include <glm/glm.hpp>
 #include "hierro/app.h"
 #include "hierro/error.h"
@@ -96,10 +95,11 @@ HierroResult<void> TextGenerater::init_buffer() {
 }
 
 void TextGenerater::draw_text(
-  std::string text,
+  std::wstring text,
   Position position,
   Size size,
   bool wrap,
+  bool overflow,
   float spacing,
   float line_spacing,
   float scale,
@@ -120,11 +120,24 @@ void TextGenerater::draw_text(
   glActiveTexture(GL_TEXTURE0);
   glBindVertexArray(vao);
 
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
-  auto s = utf32conv.from_bytes(text);
-
   // iterate through all characters
-  for (auto c = s.begin(); c != s.end(); c++) {
+
+  bool wrap_flag = false;
+
+  for (auto c = text.begin(); c != text.end(); c++) {
+    // wrap line
+    if (wrap_flag) {
+      x = position.x;
+      y -= this->line_height() * line_spacing;
+      wrap_flag = false;
+    }
+
+    // handle '\n'
+    if (*c == '\n') {
+      wrap_flag = true;
+      continue;
+    }
+
     if (!this->character_table.contains(*c)) {
       this->add_character(*c);
     }
@@ -137,16 +150,12 @@ void TextGenerater::draw_text(
     float w = ch.size.x * scale;
     float h = ch.size.y * scale;
 
-    // wrap line
     if (wrap && xpos + w > position.x + size.width) {
-      x = position.x;
-      y -= this->line_height()
-        * float(Application::get_instance()->window_size().height)
-        * line_spacing;
-      xpos = x + ch.bearing.x * scale;
-      ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
+      wrap_flag = true;
+      continue;
     }
-    if (ypos < position.y - size.height) {
+
+    if (!overflow && ypos < position.y - size.height) {
       break;
     }
 
