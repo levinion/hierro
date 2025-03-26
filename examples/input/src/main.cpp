@@ -5,15 +5,12 @@
 #include "hierro/app.h"
 #include "hierro/component/block.h"
 #include "hierro/component/label.h"
-#include "hierro/component/text.h"
 #include "hierro/utils/log.h"
 
 int main() {
   auto app = Application::get_instance();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
   app->init().unwrap();
-
-  auto tg = TextGenerater::get_instance();
-  tg->init("assets/fonts/LXGWWenKai-Regular.ttf", 48);
 
   Block container;
   Label input;
@@ -48,10 +45,7 @@ int main() {
 
   // never set focus to the text element
   app->set_focus(&container);
-
   container.add_child(&input);
   app->add_child(&container);
-
-  app->on_resize([&](int width, int height) { tg->viewport(width, height); });
   app->run();
 }

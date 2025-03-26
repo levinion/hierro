@@ -19,7 +19,7 @@ public:
 class TextGenerater {
 public:
   static TextGenerater* get_instance();
-  HierroResult<void> init(std::string font, unsigned int size);
+  HierroResult<void> init(std::string font, Size size);
   void draw_text(
     std::wstring text,
     Position position,
@@ -47,5 +47,6 @@ private:
   unsigned int vbo;
   FT_Library ft;
   FT_Face face;
-  unsigned int font_base_size;
+  // @warn: height is must, and width can be 0.0
+  Size font_size = { 0.0, 48.0 };
 };

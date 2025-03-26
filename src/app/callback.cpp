@@ -9,12 +9,9 @@ void Application::glfw_frame_buffer_size_callback(
   int height
 ) {
   glViewport(0, 0, width, height);
-  Application::get_instance()->resize_callback(width, height);
-}
-
-Application* Application::on_resize(std::function<void(int, int)> callback) {
-  this->resize_callback = callback;
-  return this;
+  auto app = Application::get_instance();
+  app->tg->viewport(width, height);
+  app->resize_callback(width, height);
 }
 
 void Application::glfw_key_callback(
@@ -55,6 +52,11 @@ void Application::glfw_char_callback(
   if (app->focused) {
     app->focused->get_input_callback()(codepoint);
   }
+}
+
+Application* Application::on_resize(std::function<void(int, int)> callback) {
+  this->resize_callback = callback;
+  return this;
 }
 
 Application* Application::on_update(std::function<bool()> callback) {

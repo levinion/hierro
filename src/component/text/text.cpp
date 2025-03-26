@@ -23,8 +23,8 @@ TextGenerater* TextGenerater::get_instance() {
   return TextGenerater::instance;
 }
 
-HierroResult<void> TextGenerater::init(std::string font, unsigned int size) {
-  this->font_base_size = size;
+HierroResult<void> TextGenerater::init(std::string font, Size size) {
+  this->font_size = size;
   try(this->init_freetype(font));
   try(this->init_shader());
   try(this->init_buffer());
@@ -43,7 +43,7 @@ HierroResult<void> TextGenerater::init_freetype(std::string font) {
   this->face = face;
   this->ft = ft;
 
-  FT_Set_Pixel_Sizes(this->face, 0, this->font_base_size);
+  FT_Set_Pixel_Sizes(this->face, this->font_size.width, this->font_size.height);
 
   FT_Select_Charmap(this->face, ft_encoding_unicode);
 
@@ -235,5 +235,5 @@ void TextGenerater::destroy() {
 }
 
 float TextGenerater::line_height() {
-  return this->font_base_size;
+  return this->font_size.height;
 }

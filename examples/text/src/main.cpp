@@ -2,15 +2,12 @@
 #include <ctime>
 #include <string>
 #include "hierro/app.h"
-#include "hierro/component/text.h"
 #include "hierro/component/label.h"
 
 int main() {
   auto app = Application::get_instance();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
   app->init().unwrap();
-
-  auto tg = TextGenerater::get_instance();
-  tg->init("assets/fonts/LXGWWenKai-Regular.ttf", 48);
 
   Label label1, label2;
 
@@ -23,7 +20,5 @@ int main() {
   label2.content = L"你好";
 
   app->add_child(&label1)->add_child(&label2);
-  app->on_resize([&](int width, int height) { tg->viewport(width, height); })
-    ->on_destroy([&] { tg->destroy(); })
-    ->run();
+  app->run();
 }

@@ -16,11 +16,13 @@ Application* Application::get_instance() {
 }
 
 HierroResult<void> Application::init() {
+  // init GLFW
   glfwInit();
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, this->gl_version.first);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, this->gl_version.second);
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  // create window
   GLFWwindow* window = glfwCreateWindow(
     // TODO: give an option to set initial window size
     800,
@@ -31,20 +33,31 @@ HierroResult<void> Application::init() {
   );
   glfwMakeContextCurrent(window);
 
+  // save window
   this->window = window;
 
+  // require opengl api with glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     return err("GLAD ERROR: glad cannot get load gl proc address.");
   }
 
+  // set viewport
   glViewport(0, 0, this->size.width, this->size.height);
 
+  // set clean color
   auto& color = this->background;
   glClearColor(color.r, color.g, color.b, color.a);
 
+  // enable blend mode
   if (this->blend) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+  }
+
+  // init text generater
+  if (!this->fonts.empty()) {
+    // TODO: handle multiple fonts
+    this->tg->init(this->fonts[0], font_size);
   }
 
   return ok();
@@ -127,4 +140,8 @@ void Application::search_focus(float x, float y) {
 
 void Application::set_focus(Component* component) {
   this->focused = component;
+}
+
+void Application::add_font(std::string font) {
+  this->fonts.push_back(font);
 }

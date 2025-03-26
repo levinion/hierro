@@ -14,6 +14,7 @@ int main() {
 #define rand random(gen)
 
   auto app = Application::get_instance();
+  // this app did not need to render text
   app->init().unwrap();
   Block block, block2;
   block.color = Color(rand, 0, 1);
