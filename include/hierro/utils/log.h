@@ -10,5 +10,6 @@ template<typename T, typename... Args>
 void LOG(T value, Args... args) {
   std::cout << value;
   ((std::cout << ' ' << args), ...);
+  std::cout << std::endl;
 }
 #endif

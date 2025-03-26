@@ -1,5 +1,4 @@
 #include <glad/glad.h>
-#include <utility>
 #include "hierro/component/block.h"
 #include "hierro/app.h"
 #include "hierro/component/component.h"
@@ -49,16 +48,16 @@ void Block::draw() {
   auto size = this->absolute_size();
   glUniform2f(
     glGetUniformLocation(this->shader.id(), "size"),
-    size.first,
-    size.second
+    size.width,
+    size.height
   );
 
   // position of left-upper vertex
   auto position = this->absolute_position();
   glUniform2f(
     glGetUniformLocation(this->shader.id(), "position"),
-    position.first,
-    position.second
+    position.x,
+    position.y
   );
 
   glBindVertexArray(this->vao);
@@ -70,11 +69,11 @@ void Block::update_vertices() {
   auto absolute_size = this->absolute_size();
 
   // 0~1 -> -1~1
-  float x = absolute_position.first / window_size.first * 2 - 1;
-  float y = absolute_position.second / window_size.second * 2 - 1;
+  float x = absolute_position.x / window_size.width * 2 - 1;
+  float y = absolute_position.y / window_size.height * 2 - 1;
   // 0~1 -> 0~2
-  float width = absolute_size.first / window_size.first * 2;
-  float height = absolute_size.second / window_size.second * 2;
+  float width = absolute_size.width / window_size.width * 2;
+  float height = absolute_size.height / window_size.height * 2;
 
   this->vertices = {
     // left down

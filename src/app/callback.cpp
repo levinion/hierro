@@ -40,10 +40,10 @@ void Application::glfw_mouse_button_callabck(
   }
   // trigger callback of focused element
   if (app->focused != nullptr) {
-    (*app->focused->get_click_callback())(button, action, mods);
+    (app->focused->get_click_callback())(button, action, mods);
   }
   // trigger global callback
-  (*app->get_click_callback())(button, action, mods);
+  (app->get_click_callback())(button, action, mods);
 }
 
 Application* Application::on_update(std::function<bool()> callback) {

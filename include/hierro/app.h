@@ -6,8 +6,8 @@
 #include <utility>
 #include "GLFW/glfw3.h"
 #include "hierro/component/component.h"
-#include "hierro/utils/color.h"
 #include "hierro/error.h"
+#include "hierro/utils/data.h"
 
 class GLFWwindow;
 
@@ -25,8 +25,8 @@ public:
   Application* on_render(std::function<void()>);
   Application* on_destroy(std::function<void()>);
 
-  std::pair<int, int> window_size();
-  std::pair<float, float> cursor_pos();
+  Size window_size();
+  Position cursor_pos();
 
   static Application* get_instance();
 
@@ -35,34 +35,32 @@ public:
 
   // only means window size when created,
   // use window_size instead if u want to get window size runtime
-  std::pair<int, int> size = std::pair(800, 600);
-  Color background = Color::rgb(0.2, 0.3, 0.3);
+
+  Color background = Color(0.2, 0.3, 0.3);
   bool blend = true;
 
   // impl Component
-  float width = 1.0;
-  float height = 1.0;
-  float x = 0.0;
-  float y = 0.0;
+  Size size = { 1.0f, 1.0f };
+  Position position = { 0.0f, 1.0f };
 
   std::vector<std::unique_ptr<Component>> children;
   Component* father = nullptr;
   std::function<void(int, int, int)> click_callback = [](int, int, int) {};
 
   virtual void draw() override;
-  virtual std::pair<float*, float*> get_position() override;
-  virtual std::pair<float*, float*> get_size() override;
-  virtual std::vector<std::unique_ptr<Component>>* get_children() override;
-  virtual Component** get_father() override;
-  virtual std::function<void(int, int, int)>* get_click_callback() override;
+  virtual Position& get_position() override;
+  virtual Size& get_size() override;
+  virtual std::vector<std::unique_ptr<Component>>& get_children() override;
+  virtual Component*& get_father() override;
+  virtual std::function<void(int, int, int)>& get_click_callback() override;
 
   // override root position and size to break recurse
-  virtual std::pair<float, float> absolute_position() override {
+  virtual Position absolute_position() override {
     auto size = this->window_size();
-    return { 0, size.second };
+    return { 0, size.height };
   }
 
-  virtual std::pair<float, float> absolute_size() override {
+  virtual Size absolute_size() override {
     return this->window_size();
   }
 

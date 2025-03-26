@@ -8,6 +8,7 @@
 #include "hierro/error.h"
 #include "hierro/shader/text/vertex.h"
 #include "hierro/shader/text/fragment.h"
+#include "hierro/utils/data.h"
 #include "hierro/component/text.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
@@ -65,9 +66,9 @@ HierroResult<void> TextGenerater::init_shader() {
   auto size = app->window_size();
   glm::mat4 projection = glm::ortho(
     0.0f,
-    static_cast<float>(size.first),
+    static_cast<float>(size.width),
     0.0f,
-    static_cast<float>(size.second)
+    static_cast<float>(size.height)
   );
   shader.use();
   glUniformMatrix4fv(
@@ -96,16 +97,17 @@ HierroResult<void> TextGenerater::init_buffer() {
 
 void TextGenerater::draw_text(
   std::string text,
-  std::pair<float, float> position,
-  std::pair<float, float> size,
+  Position position,
+  Size size,
+  bool wrap,
   float spacing,
   float line_spacing,
   float scale,
   Color color
 ) {
   // relative position to real position
-  auto x = position.first;
-  auto y = position.second;
+  auto x = position.x;
+  auto y = position.y;
 
   // activate corresponding render state
   this->shader.use();
@@ -136,15 +138,15 @@ void TextGenerater::draw_text(
     float h = ch.size.y * scale;
 
     // wrap line
-    if (xpos + w > position.first + size.first) {
-      x = position.first;
+    if (wrap && xpos + w > position.x + size.width) {
+      x = position.x;
       y -= this->line_height()
-        * float(Application::get_instance()->window_size().second)
+        * float(Application::get_instance()->window_size().height)
         * line_spacing;
       xpos = x + ch.bearing.x * scale;
       ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
     }
-    if (ypos < position.second - size.second) {
+    if (ypos < position.y - size.height) {
       break;
     }
 
@@ -164,9 +166,7 @@ void TextGenerater::draw_text(
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // render quad
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-    x += (float(ch.advance >> 6) * spacing)
-      * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+    x += (ch.advance / 64.0f) * spacing * scale;
   }
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -226,6 +226,5 @@ void TextGenerater::destroy() {
 }
 
 float TextGenerater::line_height() {
-  return this->font_base_size
-    / float(Application::get_instance()->window_size().second);
+  return this->font_base_size;
 }

@@ -6,7 +6,7 @@
 #include "freetype/freetype.h"
 #include "hierro/error.h"
 #include "hierro/shader.h"
-#include "hierro/utils/color.h"
+#include "hierro/utils/data.h"
 
 class Character {
 public:
@@ -22,8 +22,9 @@ public:
   HierroResult<void> init(std::string font, unsigned int size);
   void draw_text(
     std::string text,
-    std::pair<float, float> position,
-    std::pair<float, float> size,
+    Position position,
+    Size size,
+    bool wrap,
     float spacing,
     float line_spacing,
     float scale,

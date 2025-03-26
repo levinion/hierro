@@ -4,6 +4,7 @@
 #include <hierro/error.h>
 #include <text_encoding>
 #include "hierro/component/component.h"
+#include "hierro/utils/data.h"
 
 Application* Application::instance = nullptr;
 
@@ -21,8 +22,9 @@ HierroResult<void> Application::init() {
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow* window = glfwCreateWindow(
-    this->size.first,
-    this->size.second,
+    // TODO: give an option to set initial window size
+    800,
+    600,
     this->title.c_str(),
     NULL,
     NULL
@@ -35,7 +37,7 @@ HierroResult<void> Application::init() {
     return err("GLAD ERROR: glad cannot get load gl proc address.");
   }
 
-  glViewport(0, 0, this->size.first, this->size.second);
+  glViewport(0, 0, this->size.width, this->size.height);
 
   auto& color = this->background;
   glClearColor(color.r, color.g, color.b, color.a);
@@ -82,13 +84,13 @@ void Application::destroy() {
   glfwTerminate();
 }
 
-std::pair<int, int> Application::window_size() {
+Size Application::window_size() {
   int width, height;
   glfwGetWindowSize(this->window, &width, &height);
-  return { width, height };
+  return { (double)width, (double)height };
 }
 
-std::pair<float, float> Application::cursor_pos() {
+Position Application::cursor_pos() {
   double xpos, ypos;
   glfwGetCursorPos(this->window, &xpos, &ypos);
   return { xpos, ypos };
@@ -106,7 +108,7 @@ void __range_tree(Component* node, float x, float y, Component*& focused) {
     if (node->is_hitted(x, y)) {
       focused = node;
     }
-    for (auto& child : *node->get_children()) {
+    for (auto& child : node->get_children()) {
       __range_tree(child.get(), x, y, focused);
     }
   }
@@ -115,7 +117,7 @@ void __range_tree(Component* node, float x, float y, Component*& focused) {
 void Application::search_focus(float x, float y) {
   Component* focused = nullptr;
   // skip Application, so that focused will be either nullptr or other component
-  for (auto& child : *this->get_children()) {
+  for (auto& child : this->get_children()) {
     __range_tree(child.get(), x, y, focused);
   }
   this->focused = focused;

@@ -3,72 +3,74 @@
 #include <cassert>
 #include <functional>
 #include <memory>
-#include <utility>
 #include <vector>
+#include "hierro/utils/data.h"
 
 class Component {
 public:
   // render api
   virtual void draw() = 0;
   // layout api
-  virtual std::pair<float*, float*> get_position() = 0;
-  virtual std::pair<float*, float*> get_size() = 0;
-  virtual std::vector<std::unique_ptr<Component>>* get_children() = 0;
-  virtual Component** get_father() = 0;
+  virtual Position& get_position() = 0;
+  virtual Size& get_size() = 0;
+  virtual std::vector<std::unique_ptr<Component>>& get_children() = 0;
+  virtual Component*& get_father() = 0;
   // hook api
-  virtual std::function<void(int, int, int)>* get_click_callback() = 0;
+  virtual std::function<void(int, int, int)>& get_click_callback() = 0;
 
   virtual ~Component() = default;
 
-  virtual std::pair<float, float> absolute_position() {
-    auto father = *this->get_father();
+  virtual Position absolute_position() {
+    auto father = this->get_father();
     assert(father != nullptr);
-    auto [fp_x, fp_y] = father->absolute_position();
-    auto [fs_x, fs_y] = father->absolute_size();
-    auto [p_x, p_y] = this->get_position();
-    return std::make_pair(fp_x + fs_x * *p_x, fp_y - fs_y * (1.0 - *p_y));
+    auto father_pos = father->absolute_position();
+    auto father_size = father->absolute_size();
+    auto self_pos = this->get_position();
+    return { father_pos.x + father_size.width * self_pos.x,
+             father_pos.y - father_size.height * (1.0 - self_pos.y) };
   }
 
-  virtual std::pair<float, float> absolute_size() {
-    auto father = *this->get_father();
+  virtual Size absolute_size() {
+    auto father = this->get_father();
     assert(father != nullptr);
-    auto [fs_x, fs_y] = father->absolute_size();
-    auto [width, height] = this->get_size();
-    return std::make_pair(*width * fs_x, *height * fs_y);
+    auto father_size = father->absolute_size();
+    auto size_scale = this->get_size();
+    return { size_scale.width * father_size.width,
+             size_scale.height * father_size.height };
   }
 
   virtual void center() {
-    auto [width, height] = this->get_size();
-    auto [x, y] = this->get_position();
-    *x = 0.5 - *width / 2;
-    *y = 0.5 + *height / 2;
+    auto size = this->get_size();
+    auto& pos = this->get_position();
+    pos.x = 0.5 - size.width / 2;
+    pos.y = 0.5 + size.height / 2;
   }
 
   virtual void set_position(float x, float y) {
-    auto [px, py] = this->get_position();
-    *px = x;
-    *py = y;
+    auto& pos = this->get_position();
+    pos.x = x;
+    pos.y = y;
   }
 
   virtual void set_size(float width, float height) {
-    auto [sx, sy] = this->get_size();
-    *sx = width;
-    *sy = height;
+    auto& size = this->get_size();
+    size.width = width;
+    size.height = height;
   }
 
   virtual Component* add_child(Component* child) {
-    auto father = child->get_father();
-    assert(*father == nullptr);
-    *father = this;
-    assert(*father != nullptr);
-    auto children = this->get_children();
-    children->push_back(std::unique_ptr<Component> { child });
+    auto& father = child->get_father();
+    assert(father == nullptr);
+    father = this;
+    assert(father != nullptr);
+    auto& children = this->get_children();
+    children.push_back(std::unique_ptr<Component> { child });
     return this;
   }
 
   virtual void draw_children() {
-    auto children = this->get_children();
-    for (auto& child : *children) {
+    auto& children = this->get_children();
+    for (auto& child : children) {
       child->draw();
       child->draw_children();
     }
@@ -76,8 +78,8 @@ public:
 
   // button, action, mods
   virtual void on_click(std::function<void(int, int, int)> callback) {
-    auto click_callback = this->get_click_callback();
-    *click_callback = callback;
+    auto& click_callback = this->get_click_callback();
+    click_callback = callback;
   }
 
   virtual bool is_hitted(float x, float y) {
@@ -87,23 +89,14 @@ public:
   }
 };
 
-#define IMPL_COMPONENT(T) \
-  std::pair<float*, float*> T::get_position() { \
-    return std::make_pair(&this->x, &this->y); \
-  } \
-\
-  std::pair<float*, float*> T::get_size() { \
-    return std::make_pair(&this->width, &this->height); \
-  } \
-\
-  std::vector<std::unique_ptr<Component>>* T::get_children() { \
-    return &this->children; \
-  } \
-\
-  Component** T::get_father() { \
-    return &this->father; \
-  } \
-\
-  std::function<void(int, int, int)>* T::get_click_callback() { \
-    return &this->click_callback; \
+#define GET_REF(ret, c, name) \
+  ret& c::get_##name() { \
+    return this->name; \
   }
+
+#define IMPL_COMPONENT(T) \
+  GET_REF(Position, T, position) \
+  GET_REF(Size, T, size) \
+  GET_REF(std::vector<std::unique_ptr<Component>>, T, children) \
+  GET_REF(Component*, T, father) \
+  GET_REF(std::function<void(int, int, int)>, T, click_callback)
