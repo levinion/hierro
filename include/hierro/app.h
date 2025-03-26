@@ -15,20 +15,21 @@ class Application: public Component {
 public:
   HierroResult<void> init();
   void run();
+  void prepare();
   bool update();
   void render();
   void destroy();
 
   Application* on_resize(std::function<void(int, int)> callback);
-  Application* on_key(std::function<void(int, int, int, int)> callback);
   Application* on_update(std::function<bool()>);
   Application* on_render(std::function<void()>);
   Application* on_destroy(std::function<void()>);
 
   std::pair<int, int> window_size();
+  std::pair<float, float> cursor_pos();
 
-  ~Application();
   static Application* get_instance();
+
   std::pair<int, int> gl_version = std::pair(3, 3);
   std::string title;
 
@@ -46,12 +47,14 @@ public:
 
   std::vector<std::unique_ptr<Component>> children;
   Component* father = nullptr;
+  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
 
   virtual void draw() override;
   virtual std::pair<float*, float*> get_position() override;
   virtual std::pair<float*, float*> get_size() override;
   virtual std::vector<std::unique_ptr<Component>>* get_children() override;
   virtual Component** get_father() override;
+  virtual std::function<void(int, int, int)>* get_click_callback() override;
 
   // override root position and size to break recurse
   virtual std::pair<float, float> absolute_position() override {
@@ -64,11 +67,10 @@ public:
   }
 
 private:
-  Application();
   GLFWwindow* window;
   static Application* instance;
   static void
-  frame_buffer_size_callback(GLFWwindow* window, int width, int height);
+  glfw_frame_buffer_size_callback(GLFWwindow* window, int width, int height);
   static void glfw_key_callback(
     GLFWwindow* window,
     int key,
@@ -76,10 +78,17 @@ private:
     int action,
     int mod
   );
+  static void glfw_mouse_button_callabck(
+    GLFWwindow* window,
+    int button,
+    int action,
+    int mods
+  );
   std::function<void(int, int)> resize_callback = [](int height, int width) {};
-  std::function<void(int, int, int, int)> key_callback =
-    [](int key, int scancode, int action, int mod) {};
   std::function<bool()> update_callback = [] { return true; };
   std::function<void()> render_callback = [] {};
   std::function<void()> destroy_callback = [] {};
+
+  void search_focus(float x, float y);
+  Component* focused;
 };

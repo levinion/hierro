@@ -1,18 +1,23 @@
 #pragma once
 
 #include <cassert>
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
-#include "hierro/utils/log.h"
 
 class Component {
 public:
+  // render api
   virtual void draw() = 0;
+  // layout api
   virtual std::pair<float*, float*> get_position() = 0;
   virtual std::pair<float*, float*> get_size() = 0;
   virtual std::vector<std::unique_ptr<Component>>* get_children() = 0;
   virtual Component** get_father() = 0;
+  // hook api
+  virtual std::function<void(int, int, int)>* get_click_callback() = 0;
+
   virtual ~Component() = default;
 
   virtual std::pair<float, float> absolute_position() {
@@ -68,6 +73,18 @@ public:
       child->draw_children();
     }
   }
+
+  // button, action, mods
+  virtual void on_click(std::function<void(int, int, int)> callback) {
+    auto click_callback = this->get_click_callback();
+    *click_callback = callback;
+  }
+
+  virtual bool is_hitted(float x, float y) {
+    auto [px, py] = this->absolute_position();
+    auto [width, height] = this->absolute_size();
+    return (x >= px && x <= px + width && y >= py - height && y <= py);
+  }
 };
 
 #define IMPL_COMPONENT(T) \
@@ -85,4 +102,8 @@ public:
 \
   Component** T::get_father() { \
     return &this->father; \
+  } \
+\
+  std::function<void(int, int, int)>* T::get_click_callback() { \
+    return &this->click_callback; \
   }

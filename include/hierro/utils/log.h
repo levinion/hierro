@@ -3,6 +3,12 @@
 #define DEBUG 1
 
 #if DEBUG == 1
+
   #include <iostream>
-  #define LOG(x) std::cout << x << std::endl
+
+template<typename T, typename... Args>
+void LOG(T value, Args... args) {
+  std::cout << value;
+  ((std::cout << ' ' << args), ...);
+}
 #endif

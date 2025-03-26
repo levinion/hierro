@@ -2,6 +2,7 @@
 #include "hierro/app.h"
 #include <GLFW/glfw3.h>
 #include <hierro/error.h>
+#include <text_encoding>
 #include "hierro/component/component.h"
 
 Application* Application::instance = nullptr;
@@ -30,9 +31,6 @@ HierroResult<void> Application::init() {
 
   this->window = window;
 
-  glfwSetFramebufferSizeCallback(window, this->frame_buffer_size_callback);
-  glfwSetKeyCallback(window, this->glfw_key_callback);
-
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     return err("GLAD ERROR: glad cannot get load gl proc address.");
   }
@@ -50,7 +48,14 @@ HierroResult<void> Application::init() {
   return ok();
 }
 
+void Application::prepare() {
+  glfwSetFramebufferSizeCallback(window, this->glfw_frame_buffer_size_callback);
+  glfwSetKeyCallback(window, this->glfw_key_callback);
+  glfwSetMouseButtonCallback(window, this->glfw_mouse_button_callabck);
+}
+
 void Application::run() {
+  this->prepare();
   while (!glfwWindowShouldClose(window)) {
     if (this->update())
       this->render();
@@ -59,12 +64,14 @@ void Application::run() {
 }
 
 bool Application::update() {
-  glfwPollEvents();
   glfwSwapBuffers(window);
+  glfwPollEvents();
   return this->update_callback();
 }
 
 void Application::render() {
+  auto& color = this->background;
+  glClearColor(color.r, color.g, color.b, color.a);
   glClear(GL_COLOR_BUFFER_BIT);
   this->draw();
   this->render_callback();
@@ -75,14 +82,16 @@ void Application::destroy() {
   glfwTerminate();
 }
 
-Application::Application() {}
-
-Application::~Application() {}
-
 std::pair<int, int> Application::window_size() {
   int width, height;
   glfwGetWindowSize(this->window, &width, &height);
   return { width, height };
+}
+
+std::pair<float, float> Application::cursor_pos() {
+  double xpos, ypos;
+  glfwGetCursorPos(this->window, &xpos, &ypos);
+  return { xpos, ypos };
 }
 
 void Application::draw() {
@@ -90,3 +99,24 @@ void Application::draw() {
 }
 
 IMPL_COMPONENT(Application);
+
+// 前向遍历
+void __range_tree(Component* node, float x, float y, Component*& focused) {
+  if (node) {
+    if (node->is_hitted(x, y)) {
+      focused = node;
+    }
+    for (auto& child : *node->get_children()) {
+      __range_tree(child.get(), x, y, focused);
+    }
+  }
+}
+
+void Application::search_focus(float x, float y) {
+  Component* focused = nullptr;
+  // skip Application, so that focused will be either nullptr or other component
+  for (auto& child : *this->get_children()) {
+    __range_tree(child.get(), x, y, focused);
+  }
+  this->focused = focused;
+}

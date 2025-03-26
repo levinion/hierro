@@ -1,7 +1,7 @@
 #include <functional>
 #include "hierro/app.h"
 
-void Application::frame_buffer_size_callback(
+void Application::glfw_frame_buffer_size_callback(
   GLFWwindow* window,
   int width,
   int height
@@ -21,14 +21,29 @@ void Application::glfw_key_callback(
   int scancode,
   int action,
   int mod
-) {
-  Application::get_instance()->key_callback(key, scancode, action, mod);
-}
+) {}
 
-Application*
-Application::on_key(std::function<void(int, int, int, int)> callback) {
-  this->key_callback = callback;
-  return this;
+void Application::glfw_mouse_button_callabck(
+  GLFWwindow* window,
+  int button,
+  int action,
+  int mods
+) {
+  auto app = Application::get_instance();
+  // find the most above component and it should action on the event;
+  // and hook on app itself should always action on the event as a global hook;
+
+  // set focused element
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+    auto [x, y] = app->cursor_pos();
+    app->search_focus(x, y);
+  }
+  // trigger callback of focused element
+  if (app->focused != nullptr) {
+    (*app->focused->get_click_callback())(button, action, mods);
+  }
+  // trigger global callback
+  (*app->get_click_callback())(button, action, mods);
 }
 
 Application* Application::on_update(std::function<bool()> callback) {

@@ -26,12 +26,14 @@ public:
   float y = 1.0f;
   std::vector<std::unique_ptr<Component>> children;
   Component* father = nullptr;
+  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
 
   virtual void draw() override;
   virtual std::pair<float*, float*> get_position() override;
   virtual std::pair<float*, float*> get_size() override;
   virtual std::vector<std::unique_ptr<Component>>* get_children() override;
   virtual Component** get_father() override;
+  virtual std::function<void(int, int, int)>* get_click_callback() override;
 
 private:
 };

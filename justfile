@@ -18,3 +18,6 @@ embed:
 
 clean:
   rm -rf build
+
+tokei:
+  tokei -e third_party
