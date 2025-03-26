@@ -15,6 +15,11 @@ void main() {
     float distance_border = roundedBoxSDF(gl_FragCoord.xy - vec2(0.5, 0.5) - center, size / 2.0, radius * 50.0);
     if (distance < 0.0) {
         gl_FragColor = color;
+    } else if (border_thickness <= 0.0) {
+        float alpha = 1.0 - smoothstep(0.0f, 2.0f, distance);
+        vec4 mixed_color = vec4(color.xyz, alpha);
+        gl_FragColor = mix(mixed_color, color, alpha);
+        return;
     } else if (distance_border < 0.0) {
         float alpha = 1.0 - smoothstep(0.0f, 2.0f, distance);
         gl_FragColor = mix(border_color, color, alpha);
