@@ -121,6 +121,8 @@ void Application::search_focus(float x, float y) {
     __range_tree(child.get(), x, y, focused);
   }
   this->focused = focused;
+
+  //TODO: call on_focus hook here
 }
 
 void Application::set_focus(Component* component) {

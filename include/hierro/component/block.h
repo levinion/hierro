@@ -17,8 +17,9 @@ public:
   Shader shader;
 
   float radius = 1.0f;
-
   Color color = Color(0.5, 0.5, 0.5);
+  float border_thickness = 1.0f;
+  Color border_color = Color(1.0, 0.0, 1.0);
 
   Block();
 

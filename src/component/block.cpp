@@ -60,6 +60,19 @@ void Block::draw() {
     position.y
   );
 
+  glUniform1f(
+    glGetUniformLocation(this->shader.id(), "border_thickness"),
+    this->border_thickness
+  );
+
+  glUniform4f(
+    glGetUniformLocation(this->shader.id(), "border_color"),
+    this->border_color.r,
+    this->border_color.g,
+    this->border_color.b,
+    this->border_color.a
+  );
+
   glBindVertexArray(this->vao);
 }
 

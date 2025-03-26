@@ -40,7 +40,6 @@ void Application::glfw_mouse_button_callabck(
   if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
     auto [x, y] = app->cursor_pos();
     app->search_focus(x, y);
-    //TODO: call on_focus hook here
   }
   // trigger callback of focused element
   if (app->focused) {
