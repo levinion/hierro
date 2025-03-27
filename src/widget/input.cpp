@@ -2,8 +2,8 @@
 #include "GLFW/glfw3.h"
 
 void Input::draw() {
-  this->block.draw();
-  this->label.draw();
+  // this->block.draw();
+  // this->label.draw();
 };
 
 IMPL_COMPONENT(Input)
@@ -14,6 +14,7 @@ Input::Input() {
 
   label.set_position(0.1, 1);
   label.set_size(0.8, 1);
+  label.overflow = false;
 
   label.content = L"";
 

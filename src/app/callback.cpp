@@ -34,14 +34,13 @@ void Application::glfw_mouse_button_callabck(
 ) {
   auto app = Application::get_instance();
   assert(app->focused);
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     auto [x, y] = app->cursor_pos();
     app->search_focus(x, y);
   }
   // trigger callback of focused element
-  if (app->focused) {
-    app->focused->send_click_event(button, action, mods);
-  }
+  assert(app->focused);
+  app->focused->send_click_event(button, action, mods);
 }
 
 void Application::glfw_char_callback(
@@ -49,9 +48,8 @@ void Application::glfw_char_callback(
   unsigned int codepoint
 ) {
   auto app = Application::get_instance();
-  if (app->focused) {
-    app->focused->send_input_event(codepoint);
-  }
+  assert(app->focused);
+  app->focused->send_input_event(codepoint);
 }
 
 Application* Application::on_resize(std::function<void(int, int)> callback) {
