@@ -23,7 +23,7 @@ void Application::glfw_key_callback(
 ) {
   auto app = Application::get_instance();
   assert(app->focused);
-  app->focused->get_key_callback()(key, scancode, action, mod);
+  app->focused->send_key_event(key, scancode, action, mod);
 }
 
 void Application::glfw_mouse_button_callabck(
@@ -40,7 +40,7 @@ void Application::glfw_mouse_button_callabck(
   }
   // trigger callback of focused element
   if (app->focused) {
-    app->focused->get_click_callback()(button, action, mods);
+    app->focused->send_click_event(button, action, mods);
   }
 }
 
@@ -50,7 +50,7 @@ void Application::glfw_char_callback(
 ) {
   auto app = Application::get_instance();
   if (app->focused) {
-    app->focused->get_input_callback()(codepoint);
+    app->focused->send_input_event(codepoint);
   }
 }
 

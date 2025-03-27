@@ -34,6 +34,7 @@ public:
   virtual std::function<void(int, int, int)>& get_click_callback() override;
   virtual std::function<void(int, int, int, int)>& get_key_callback() override;
   virtual std::function<void(unsigned int)>& get_input_callback() override;
+  virtual std::function<void()>& get_focus_callback() override;
 
   // label should never be treated as a normal ui element, since its size cannot got easily, and it should be binded with a container(such as block)
   virtual bool is_hitted(float x, float y) override {
@@ -45,4 +46,5 @@ private:
   std::function<void(int, int, int, int)> key_callback =
     [](int, int, int, int) {};
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
+  std::function<void()> focus_callback = [] {};
 };

@@ -19,6 +19,7 @@ public:
   virtual std::function<void(int, int, int)>& get_click_callback() = 0;
   virtual std::function<void(int, int, int, int)>& get_key_callback() = 0;
   virtual std::function<void(unsigned int)>& get_input_callback() = 0;
+  virtual std::function<void()>& get_focus_callback() = 0;
 
   virtual ~Component() = default;
 
@@ -84,6 +85,10 @@ public:
     click_callback = callback;
   }
 
+  virtual void send_click_event(int button, int action, int mods) {
+    this->get_click_callback()(button, action, mods);
+  }
+
   // @param int key
   // @param int scancode
   // @param int action
@@ -93,10 +98,28 @@ public:
     key_callback = callback;
   }
 
+  virtual void send_key_event(int key, int scancode, int action, int mod) {
+    this->get_key_callback()(key, scancode, action, mod);
+  }
+
   // param unsigned int codepoint
   virtual void on_input(std::function<void(unsigned int)> callback) {
     auto& input_callback = this->get_input_callback();
     input_callback = callback;
+  }
+
+  virtual void send_input_event(unsigned int codepoint) {
+    this->get_input_callback()(codepoint);
+  }
+
+  // do not set this hook with on_click at the same time
+  virtual void on_focus(std::function<void()> callback) {
+    auto& focus_callback = this->get_focus_callback();
+    focus_callback = callback;
+  }
+
+  virtual void send_focus_event() {
+    this->get_focus_callback()();
   }
 
   virtual bool is_hitted(float x, float y) {
@@ -105,6 +128,14 @@ public:
     return (x >= px && x <= px + width && y >= py - height && y <= py);
   }
 };
+
+#define GET_SET(type, attr) \
+  type get_##attr() { \
+    return this->attr; \
+  } \
+  void set_##attr(type attr) { \
+    this->attr = attr; \
+  }
 
 #define GET_REF(ret, c, name) \
   ret& c::get_##name() { \
@@ -118,4 +149,5 @@ public:
   GET_REF(Component*, T, father) \
   GET_REF(std::function<void(int, int, int)>, T, click_callback) \
   GET_REF(std::function<void(int, int, int, int)>, T, key_callback) \
-  GET_REF(std::function<void(unsigned int)>, T, input_callback)
+  GET_REF(std::function<void(unsigned int)>, T, input_callback) \
+  GET_REF(std::function<void()>, T, focus_callback)

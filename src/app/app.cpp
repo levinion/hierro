@@ -135,7 +135,7 @@ void Application::search_focus(float x, float y) {
   }
   this->focused = focused;
 
-  //TODO: call on_focus hook here
+  focused->send_focus_event();
 }
 
 void Application::set_focus(Component* component) {
