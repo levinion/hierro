@@ -31,6 +31,7 @@ HierroResult<void> TextGenerater::init(std::string font, Size size) {
   return ok();
 }
 
+// TODO: this should receive a font list
 HierroResult<void> TextGenerater::init_freetype(std::string font) {
   FT_Library ft;
   if (FT_Init_FreeType(&ft))
@@ -103,11 +104,90 @@ void TextGenerater::draw_text(
   float spacing,
   float line_spacing,
   float scale,
-  Color color
+  Color color,
+  VerticalAlign vertical_align,
+  HorizontalAlign horizontal_align
 ) {
-  // relative position to real position
-  auto x = position.x;
-  auto y = position.y;
+  bool wrap_flag = false;
+
+  // calculate max size of render box
+  double max_width = 0.0, max_height = this->line_height();
+  {
+    // x,y is abosulte positon
+    auto x = position.x;
+    auto y = position.y;
+
+    for (auto c = text.begin(); c != text.end(); c++) {
+      if (wrap_flag) {
+        if (x - position.x > max_width) {
+          max_width = x - position.x;
+        }
+        x = position.x;
+        y -= this->line_height() * line_spacing;
+        max_height += this->line_height() * line_spacing;
+        wrap_flag = false;
+      }
+
+      // handle '\n'
+      if (*c == '\n') {
+        wrap_flag = true;
+        continue;
+      }
+
+      if (!this->character_table.contains(*c)) {
+        this->add_character(*c);
+      }
+
+      auto ch = this->character_table[*c];
+
+      float xpos = x + ch.bearing.x * scale;
+      float ypos = y - this->line_height() - (ch.size.y - ch.bearing.y) * scale;
+
+      float w = ch.size.x * scale;
+      float h = ch.size.y * scale;
+
+      if (xpos + w > position.x + size.width) {
+        if (wrap) {
+          wrap_flag = true;
+          continue;
+        } else {
+          break;
+        }
+      }
+
+      if (!overflow && ypos < position.y - size.height) {
+        break;
+      }
+
+      x += (ch.advance / 64.0f) * spacing * scale;
+    }
+    if (x - position.x > max_width) {
+      max_width = x - position.x;
+    }
+  }
+
+  // set offset based on align options
+  switch (vertical_align) {
+    case VerticalAlign::Center:
+      position.x += (size.width - max_width) / 2;
+      break;
+    case VerticalAlign::Left:
+      break;
+    case VerticalAlign::Right:
+      position.x += size.width - max_width;
+      break;
+  }
+
+  switch (horizontal_align) {
+    case HorizontalAlign::Center:
+      position.y -= (size.height - max_height) / 2;
+      break;
+    case HorizontalAlign::Top:
+      break;
+    case HorizontalAlign::Bottom:
+      position.y -= size.height - max_height;
+      break;
+  }
 
   // activate corresponding render state
   this->shader.use();
@@ -122,7 +202,10 @@ void TextGenerater::draw_text(
 
   // iterate through all characters
 
-  bool wrap_flag = false;
+  auto x = position.x;
+  auto y = position.y;
+
+  wrap_flag = false;
 
   for (auto c = text.begin(); c != text.end(); c++) {
     // wrap line
@@ -150,9 +233,13 @@ void TextGenerater::draw_text(
     float w = ch.size.x * scale;
     float h = ch.size.y * scale;
 
-    if (wrap && xpos + w > position.x + size.width) {
-      wrap_flag = true;
-      continue;
+    if (xpos + w > position.x + size.width) {
+      if (wrap) {
+        wrap_flag = true;
+        continue;
+      } else {
+        break;
+      }
     }
 
     if (!overflow && ypos < position.y - size.height) {
@@ -195,6 +282,7 @@ void TextGenerater::viewport(float x, float y) {
 
 HierroResult<void> TextGenerater::add_character(char32_t c) {
   if (FT_Load_Char(this->face, c, FT_LOAD_RENDER)) {
+    // TODO: if failed to load glyph, should get it from another face as fallback
     std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
     return ok();
   }

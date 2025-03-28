@@ -18,7 +18,6 @@ int main() {
   app->init().unwrap();
 
   Button but;
-  but.set_size(0.1, 0.1);
   but.center();
 
   but.on_click([&](int button, int action, int mods) {

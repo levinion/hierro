@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "hierro/component/text.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/component/component.hpp"
 
@@ -19,6 +20,8 @@ public:
   bool overflow = true;
   float spacing = 1.0f;
   float line_spacing = 1.5f;
+  VerticalAlign vertical_align = { VerticalAlign::Center };
+  HorizontalAlign horizontal_align = { HorizontalAlign::Center };
 
   // impl Component
   Size size = { 1.0f, 1.0f };

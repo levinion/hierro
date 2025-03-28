@@ -16,7 +16,9 @@ void Label::draw() {
     this->spacing,
     this->line_spacing,
     this->scale,
-    this->color
+    this->color,
+    this->vertical_align,
+    this->horizontal_align
   );
 }
 

@@ -1,5 +1,6 @@
 #include "hierro/widget/input.hpp"
 #include "GLFW/glfw3.h"
+#include "hierro/component/text.hpp"
 
 void Input::draw() {
   // this->block.draw();
@@ -12,9 +13,10 @@ Input::Input() {
   block.set_size(1.0, 1.0);
   block.center();
 
-  label.set_position(0.1, 1);
-  label.set_size(0.8, 1);
+  label.set_size(0.9, 1);
+  label.center();
   label.overflow = false;
+  label.vertical_align = VerticalAlign::Left;
 
   label.content = L"";
 

@@ -16,6 +16,9 @@ public:
   unsigned int advance;
 };
 
+enum class VerticalAlign { Left, Right, Center };
+enum class HorizontalAlign { Top, Bottom, Center };
+
 class TextGenerater {
 public:
   static TextGenerater* get_instance();
@@ -29,7 +32,9 @@ public:
     float spacing,
     float line_spacing,
     float scale,
-    Color color
+    Color color,
+    VerticalAlign vertical_align,
+    HorizontalAlign horizontal_align
   );
   void destroy();
   void viewport(float x, float y);

@@ -8,8 +8,9 @@ Button::Button() {
   block.set_size(1.0, 1.0);
   block.center();
 
-  label.set_position(0.3, 0.65);
-  label.set_size(0.8, 1);
+  // label.set_position(0.3, 0.65);
+  label.set_size(1, 1);
+  label.center();
 
   label.content = L"button";
   label.overflow = false;

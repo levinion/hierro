@@ -13,8 +13,8 @@ int main() {
   input.set_size(0.3, 0.1);
   input.center();
 
+  input.label.wrap = false;
   input.label.overflow = false;
-  input.block.border_thickness = 0.0;
 
   app->add_child(&input);
   app->run();
