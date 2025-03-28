@@ -18,7 +18,7 @@ target_include_directories(${name} PUBLIC include/)
 target_link_options(${name} PRIVATE -static-libgcc -static-libstdc++)
 
 # third party
-add_subdirectory(./third_party/glfw-3.4)
+add_subdirectory(./vendor/glfw-3.4)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -27,13 +27,13 @@ target_link_libraries(${name} PUBLIC glfw)
 find_package(OpenGL REQUIRED)
 target_link_libraries(${name} PUBLIC OpenGL::GL)
 
-add_subdirectory(./third_party/glad)
+add_subdirectory(./vendor/glad)
 target_link_libraries(${name} PUBLIC glad)
 
 
-add_subdirectory(./third_party/freetype-2.13.3)
+add_subdirectory(./vendor/freetype-2.13.3)
 target_link_libraries(${name} PUBLIC freetype)
 
-target_include_directories(${name} PUBLIC ./third_party/glm/)
+target_include_directories(${name} PUBLIC ./vendor/glm/)
 
-target_include_directories(${name} PUBLIC ./third_party/result-cpp/)
+target_include_directories(${name} PUBLIC ./vendor/result-cpp/)
