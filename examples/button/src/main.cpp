@@ -7,6 +7,8 @@
 #include "hierro/utils/log.hpp"
 #include "hierro/widget/button.hpp"
 
+using namespace hierro;
+
 int main() {
   std::random_device rd;
   std::mt19937 gen(rd());

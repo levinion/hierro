@@ -8,6 +8,8 @@
 #include "hierro/shader.hpp"
 #include "hierro/utils/data.hpp"
 
+namespace hierro {
+
 class Character {
 public:
   unsigned int texture_id;
@@ -55,3 +57,5 @@ private:
   // @warn: height is must, and width can be 0.0
   Size font_size = { 0.0, 48.0 };
 };
+
+} // namespace hierro

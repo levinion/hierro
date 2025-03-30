@@ -2,6 +2,8 @@
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
 
+namespace hierro {
+
 Label::Label() {}
 
 void Label::draw() {
@@ -23,3 +25,5 @@ void Label::draw() {
 }
 
 IMPL_COMPONENT(Label)
+
+} // namespace hierro

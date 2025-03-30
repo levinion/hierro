@@ -3,6 +3,8 @@
 #include <GL/glext.h>
 #include <cstddef>
 
+namespace hierro {
+
 Shader::Shader(const char* vertex, const char* fragment) {
   unsigned int vertex_shader;
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -36,3 +38,5 @@ unsigned int Shader::id() {
 }
 
 Shader::Shader() {}
+
+} // namespace hierro

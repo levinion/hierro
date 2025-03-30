@@ -3,6 +3,8 @@
 #include "GLFW/glfw3.h"
 #include "hierro/app.hpp"
 
+namespace hierro {
+
 void Application::glfw_frame_buffer_size_callback(
   GLFWwindow* window,
   int width,
@@ -71,3 +73,5 @@ Application* Application::on_destroy(std::function<void()> callback) {
   this->destroy_callback = callback;
   return this;
 }
+
+} // namespace hierro

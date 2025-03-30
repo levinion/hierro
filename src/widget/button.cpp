@@ -1,5 +1,7 @@
 #include "hierro/widget/button.hpp"
 
+namespace hierro {
+
 void Button::draw() {};
 
 IMPL_COMPONENT(Button)
@@ -36,3 +38,5 @@ Button::Button() {
 bool Button::is_hitted(float x, float y) {
   return false;
 }
+
+} // namespace hierro

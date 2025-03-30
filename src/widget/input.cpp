@@ -2,6 +2,8 @@
 #include "GLFW/glfw3.h"
 #include "hierro/component/text.hpp"
 
+namespace hierro {
+
 void Input::draw() {
   // this->block.draw();
   // this->label.draw();
@@ -46,3 +48,5 @@ Input::Input() {
 bool Input::is_hitted(float x, float y) {
   return false;
 }
+
+} // namespace hierro

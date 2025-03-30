@@ -3,6 +3,8 @@
 #include <expected>
 #include <result/result.h>
 
+namespace hierro {
+
 using HierroError = const char*;
 
 template<typename T>
@@ -27,3 +29,5 @@ template<typename T>
 HierroResult<T> err(HierroError error) {
   return HierroResult<T>::err(error);
 }
+
+} // namespace hierro

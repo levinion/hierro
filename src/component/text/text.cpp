@@ -14,6 +14,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include FT_FREETYPE_H
 
+namespace hierro {
+
 TextGenerater* TextGenerater::instance = nullptr;
 
 TextGenerater* TextGenerater::get_instance() {
@@ -325,3 +327,5 @@ void TextGenerater::destroy() {
 float TextGenerater::line_height() {
   return this->font_size.height;
 }
+
+} // namespace hierro

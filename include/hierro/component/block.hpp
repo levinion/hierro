@@ -7,6 +7,8 @@
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 
+namespace hierro {
+
 class Block: public Component {
 public:
   unsigned int vbo;
@@ -50,3 +52,5 @@ private:
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
   std::function<void()> focus_callback = [] {};
 };
+
+} // namespace hierro

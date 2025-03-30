@@ -1,5 +1,7 @@
 #pragma once
 
+namespace hierro {
+
 class Color {
 public:
   float r, g, b, a;
@@ -24,3 +26,5 @@ public:
 
   Size(double width, double height) : width(width), height(height) {}
 };
+
+} // namespace hierro

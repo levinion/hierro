@@ -6,6 +6,8 @@
 #include <vector>
 #include "hierro/utils/data.hpp"
 
+namespace hierro {
+
 class Component {
 public:
   // render api
@@ -151,3 +153,5 @@ public:
   GET_REF(std::function<void(int, int, int, int)>, T, key_callback) \
   GET_REF(std::function<void(unsigned int)>, T, input_callback) \
   GET_REF(std::function<void()>, T, focus_callback)
+
+} // namespace hierro

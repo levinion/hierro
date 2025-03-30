@@ -7,6 +7,8 @@
 #include "hierro/utils/data.hpp"
 #include "hierro/component/component.hpp"
 
+namespace hierro {
+
 class Label: public Component {
 public:
   Label();
@@ -51,3 +53,5 @@ private:
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
   std::function<void()> focus_callback = [] {};
 };
+
+} // namespace hierro

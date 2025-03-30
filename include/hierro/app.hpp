@@ -11,7 +11,7 @@
 #include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
 
-class GLFWwindow;
+namespace hierro {
 
 class Application: public Component {
 public:
@@ -118,3 +118,5 @@ private:
   void search_focus(float x, float y);
   Component* focused = this; // focused should never be nullptr
 };
+
+} // namespace hierro

@@ -2,6 +2,8 @@
 #include "hierro/component/component.hpp"
 #include "hierro/component/label.hpp"
 
+namespace hierro {
+
 class Button: public Component {
 public:
   // impl Component
@@ -34,3 +36,5 @@ private:
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
   std::function<void()> focus_callback = [] {};
 };
+
+} // namespace hierro

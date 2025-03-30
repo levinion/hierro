@@ -6,6 +6,8 @@
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 
+namespace hierro {
+
 Application* Application::instance = nullptr;
 
 Application* Application::get_instance() {
@@ -145,3 +147,5 @@ void Application::set_focus(Component* component) {
 void Application::add_font(std::string font) {
   this->fonts.push_back(font);
 }
+
+} // namespace hierro

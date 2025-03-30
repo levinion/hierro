@@ -6,6 +6,8 @@
 #include "hierro/app.hpp"
 #include "hierro/component/block.hpp"
 
+using namespace hierro;
+
 int main() {
   std::random_device rd;
   std::mt19937 gen(rd());

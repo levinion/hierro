@@ -1,5 +1,7 @@
 #pragma once
 
+namespace hierro {
+
 class Shader {
 public:
   Shader(const char* vertex, const char* fragment);
@@ -11,3 +13,5 @@ public:
 private:
   unsigned int program;
 };
+
+} // namespace hierro

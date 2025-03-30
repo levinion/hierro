@@ -4,6 +4,8 @@
 #include "hierro/app.hpp"
 #include "hierro/widget/input.hpp"
 
+using namespace hierro;
+
 int main() {
   auto app = Application::get_instance();
   app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");

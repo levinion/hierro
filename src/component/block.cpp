@@ -6,6 +6,8 @@
 #include "hierro/shader/block/fragment.hpp"
 #include "hierro/shader.hpp"
 
+namespace hierro {
+
 Block::Block() {
   // init vao
   glGenVertexArrays(1, &this->vao);
@@ -136,3 +138,5 @@ void Block::init_shader() {
 }
 
 IMPL_COMPONENT(Block)
+
+} // namespace hierro
