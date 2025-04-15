@@ -50,10 +50,6 @@ void Block::draw() {
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   // update uniforms
-  glUniform1i(
-    glGetUniformLocation(this->shader.id(), "texture_enabled"),
-    static_cast<int>(this->texture_enabled)
-  );
   glUniform1f(glGetUniformLocation(this->shader.id(), "radius"), this->radius);
   glUniform4f(
     glGetUniformLocation(this->shader.id(), "color"),
@@ -182,6 +178,11 @@ void Block::set_texture(cv::Mat& image) {
   glGenerateMipmap(GL_TEXTURE_2D);
   this->texture_enabled = true;
   this->texture = texture;
+
+  glUniform1i(
+    glGetUniformLocation(this->shader.id(), "texture_enabled"),
+    this->texture_enabled
+  );
 }
 
 IMPL_COMPONENT(Block)
