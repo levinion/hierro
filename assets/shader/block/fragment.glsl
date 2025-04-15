@@ -17,8 +17,9 @@ float roundedBoxSDF(vec2 p, vec2 b, float r) {
 }
 void main() {
     vec4 tex_color = texture(tex, tex_coord);
+    vec4 color = color;
     if (texture_enabled) {
-        vec4 color = tex_color;
+        color = tex_color;
     }
 
     vec2 center = vec2(position.x + size.x / 2.0, position.y - size.y / 2.0);
