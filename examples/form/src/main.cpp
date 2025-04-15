@@ -12,8 +12,7 @@ using namespace hierro;
 
 int main() {
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
-  app->init().unwrap();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
 
   Block container;
   container.set_size(0.5, 0.5);
@@ -43,5 +42,5 @@ int main() {
 
   app->add_child(&container);
   app->add_child(&button);
-  app->on_render([&] { LOG(app->children.size()); })->run();
+  app->run();
 }

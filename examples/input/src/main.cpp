@@ -8,8 +8,7 @@ using namespace hierro;
 
 int main() {
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
-  app->init().unwrap();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
 
   Input input;
   input.set_size(0.3, 0.1);

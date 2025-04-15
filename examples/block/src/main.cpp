@@ -17,7 +17,7 @@ int main() {
 
   auto app = Application::get_instance();
   // this app did not need to render text
-  app->init().unwrap();
+  app->init(800, 600).unwrap();
   Block block, block2;
   block.color = Color(rand, 0, 1);
   block.set_position(0.0, 1.0);

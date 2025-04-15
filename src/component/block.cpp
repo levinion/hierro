@@ -25,18 +25,35 @@ Block::Block() {
   // position: x, y
   glBindVertexArray(this->vao);
   glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+  glVertexAttribPointer(
+    1,
+    2,
+    GL_FLOAT,
+    GL_FALSE,
+    4 * sizeof(float),
+    (void*)(2 * sizeof(float))
+  );
   glEnableVertexAttribArray(0);
 }
 
 void Block::draw() {
   // send vertices before drawing
   this->update_vertices();
-
   this->shader.use();
+
+  if (this->texture_enabled) {
+    glBindTexture(GL_TEXTURE_2D, texture);
+  }
+
+  glBindVertexArray(this->vao);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   // update uniforms
+  glUniform1i(
+    glGetUniformLocation(this->shader.id(), "texture_enabled"),
+    static_cast<int>(this->texture_enabled)
+  );
   glUniform1f(glGetUniformLocation(this->shader.id(), "radius"), this->radius);
   glUniform4f(
     glGetUniformLocation(this->shader.id(), "color"),
@@ -74,8 +91,6 @@ void Block::draw() {
     this->border_color.b,
     this->border_color.a
   );
-
-  glBindVertexArray(this->vao);
 }
 
 void Block::update_vertices() {
@@ -90,19 +105,26 @@ void Block::update_vertices() {
   float width = absolute_size.width / window_size.width * 2;
   float height = absolute_size.height / window_size.height * 2;
 
-  this->vertices = {
-    // left down
-    x,
-    y - height,
-    // right down
-    x + width,
-    y - height,
-    // left up
-    x,
-    y,
-    // right up
-    x + width,
-    y,
+  this->vertices = { // left down
+                     x,
+                     y - height,
+                     0.0,
+                     0.0,
+                     // right down
+                     x + width,
+                     y - height,
+                     1.0,
+                     0.0,
+                     // left up
+                     x,
+                     y,
+                     0.0,
+                     1.0,
+                     // right up
+                     x + width,
+                     y,
+                     1.0,
+                     1.0
   };
 
   glBindVertexArray(this->vao);
@@ -135,6 +157,31 @@ void Block::init_shader() {
   auto fragment_shader_code = (const char*)_block_fragment_shader_code;
 
   this->shader = Shader(vertex_shader_code, fragment_shader_code);
+}
+
+void Block::set_texture(cv::Mat& image) {
+  unsigned int texture;
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexImage2D(
+    GL_TEXTURE_2D,
+    0,
+    GL_RGB,
+    image.cols,
+    image.rows,
+    0,
+    GL_RGB,
+    GL_UNSIGNED_BYTE,
+    image.ptr()
+  );
+  glGenerateMipmap(GL_TEXTURE_2D);
+  this->texture_enabled = true;
+  this->texture = texture;
 }
 
 IMPL_COMPONENT(Block)

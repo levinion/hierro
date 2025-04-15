@@ -30,10 +30,11 @@ target_link_libraries(${name} PUBLIC OpenGL::GL)
 add_subdirectory(./vendor/glad)
 target_link_libraries(${name} PUBLIC glad)
 
-
 add_subdirectory(./vendor/freetype-2.13.3)
 target_link_libraries(${name} PUBLIC freetype)
 
-target_include_directories(${name} PUBLIC ./vendor/glm/)
+find_package(OpenCV REQUIRED)
+target_link_libraries(${name} PUBLIC ${OpenCV_LIBRARIES})
 
+target_include_directories(${name} PUBLIC ./vendor/glm/)
 target_include_directories(${name} PUBLIC ./vendor/result-cpp/)

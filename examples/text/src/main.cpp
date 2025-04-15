@@ -8,8 +8,7 @@ using namespace hierro;
 
 int main() {
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
-  app->init().unwrap();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
 
   Label label1, label2;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <opencv2/opencv.hpp>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -23,7 +24,12 @@ public:
   float border_thickness = 1.0f;
   Color border_color = Color(1.0, 0.0, 1.0);
 
+  // texture
+  unsigned int texture;
+  void set_texture(cv::Mat& image);
+
   Block();
+  ~Block() = default;
 
   // impl Component
   Size size = { 0.25f, 0.25f };
@@ -45,6 +51,8 @@ private:
   void update_vertices();
   void update_indices();
   void init_shader();
+
+  bool texture_enabled = false;
 
   std::function<void(int, int, int)> click_callback = [](int, int, int) {};
   std::function<void(int, int, int, int)> key_callback =

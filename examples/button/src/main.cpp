@@ -16,8 +16,7 @@ int main() {
 
 #define rand random(gen)
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf");
-  app->init().unwrap();
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
 
   Button but;
   but.center();

@@ -2,7 +2,6 @@
 #include "hierro/app.hpp"
 #include <GLFW/glfw3.h>
 #include <hierro/error.hpp>
-#include <text_encoding>
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 
@@ -17,7 +16,7 @@ Application* Application::get_instance() {
   return Application::instance;
 }
 
-HierroResult<void> Application::init() {
+HierroResult<void> Application::init(int width, int height) {
   // init GLFW
   glfwInit();
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, this->gl_version.first);
@@ -25,14 +24,8 @@ HierroResult<void> Application::init() {
   // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // create window
-  GLFWwindow* window = glfwCreateWindow(
-    // TODO: give an option to set initial window size
-    800,
-    600,
-    this->title.c_str(),
-    NULL,
-    NULL
-  );
+  GLFWwindow* window =
+    glfwCreateWindow(width, height, this->title.c_str(), NULL, NULL);
   glfwMakeContextCurrent(window);
 
   // save window
@@ -97,6 +90,18 @@ void Application::render() {
 
 void Application::destroy() {
   this->destroy_callback();
+
+  // std::function<void(std::unique_ptr<Component>&)> range =
+  //   [&](std::unique_ptr<Component>& node) {
+  //     if (node->get_children().size() != 0) {
+  //       for (auto& child : node->get_children()) {
+  //         range(node);
+  //       }
+  //     } else {
+  //       delete node.release();
+  //     }
+  //   };
+
   glfwTerminate();
 }
 
@@ -144,8 +149,24 @@ void Application::set_focus(Component* component) {
   this->focused = component;
 }
 
-void Application::add_font(std::string font) {
+Application* Application::add_font(std::string font) {
   this->fonts.push_back(font);
+  return this;
+}
+
+// TODO: FINISH THIS
+void Application::fullscreen() {
+  auto monitor = glfwGetPrimaryMonitor();
+  auto size = window_size();
+  glfwSetWindowMonitor(
+    window,
+    monitor,
+    0,
+    0,
+    size.width,
+    size.height,
+    GLFW_DONT_CARE
+  );
 }
 
 } // namespace hierro

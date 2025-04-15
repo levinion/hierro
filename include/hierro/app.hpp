@@ -16,7 +16,7 @@ namespace hierro {
 class Application: public Component {
 public:
   // lifetime
-  HierroResult<void> init();
+  HierroResult<void> init(int width, int height);
   void run();
   void prepare();
   bool update();
@@ -43,8 +43,9 @@ public:
 
   // custom method
   void set_focus(Component* component);
-  void add_font(std::string font);
+  Application* add_font(std::string font);
   void set_font_size(Size size);
+  void fullscreen();
 
   // impl Component
   // Component params
