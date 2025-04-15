@@ -91,17 +91,6 @@ void Application::render() {
 void Application::destroy() {
   this->destroy_callback();
 
-  // std::function<void(std::unique_ptr<Component>&)> range =
-  //   [&](std::unique_ptr<Component>& node) {
-  //     if (node->get_children().size() != 0) {
-  //       for (auto& child : node->get_children()) {
-  //         range(node);
-  //       }
-  //     } else {
-  //       delete node.release();
-  //     }
-  //   };
-
   glfwTerminate();
 }
 
@@ -130,7 +119,7 @@ void __range_tree(Component* node, float x, float y, Component*& focused) {
       focused = node;
     }
     for (auto& child : node->get_children()) {
-      __range_tree(child.get(), x, y, focused);
+      __range_tree(child, x, y, focused);
     }
   }
 }
@@ -138,7 +127,7 @@ void __range_tree(Component* node, float x, float y, Component*& focused) {
 void Application::search_focus(float x, float y) {
   Component* focused = this;
   for (auto& child : this->get_children()) {
-    __range_tree(child.get(), x, y, focused);
+    __range_tree(child, x, y, focused);
   }
   this->focused = focused;
 

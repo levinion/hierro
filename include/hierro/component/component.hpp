@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <functional>
-#include <memory>
 #include <vector>
 #include "hierro/utils/data.hpp"
 
@@ -15,7 +14,7 @@ public:
   // layout api
   virtual Position& get_position() = 0;
   virtual Size& get_size() = 0;
-  virtual std::vector<std::unique_ptr<Component>>& get_children() = 0;
+  virtual std::vector<Component*>& get_children() = 0;
   virtual Component*& get_father() = 0;
   // hook api
   virtual std::function<void(int, int, int)>& get_click_callback() = 0;
@@ -69,7 +68,7 @@ public:
     father = this;
     assert(father != nullptr);
     auto& children = this->get_children();
-    children.push_back(std::unique_ptr<Component> { child });
+    children.push_back(child);
     return this;
   }
 
@@ -147,7 +146,7 @@ public:
 #define IMPL_COMPONENT(T) \
   GET_REF(Position, T, position) \
   GET_REF(Size, T, size) \
-  GET_REF(std::vector<std::unique_ptr<Component>>, T, children) \
+  GET_REF(std::vector<Component*>, T, children) \
   GET_REF(Component*, T, father) \
   GET_REF(std::function<void(int, int, int)>, T, click_callback) \
   GET_REF(std::function<void(int, int, int, int)>, T, key_callback) \
