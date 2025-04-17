@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://www.glfw.org/
+HostUrl=https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524997/504e3f1d-0b6b-4ccd-90f1-d3fe6d2460f2?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250115%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250115T142120Z&X-Amz-Expires=300&X-Amz-Signature=d85345ff08be30d438059b2214276255f112dfcd599ec736db2eccb4055d7c3e&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dglfw-3.4.zip&response-content-type=application%2Foctet-stream

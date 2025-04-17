@@ -1,0 +1,3 @@
+[submodule "vendor/result-cpp"]
+	path = vendor/result-cpp
+	url = http://github.com/levinion/result-cpp.git
