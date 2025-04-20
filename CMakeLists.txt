@@ -36,5 +36,8 @@ target_link_libraries(${name} PUBLIC freetype)
 find_package(OpenCV REQUIRED)
 target_link_libraries(${name} PUBLIC ${OpenCV_LIBRARIES})
 
+find_package(SDL3 REQUIRED)
+target_link_libraries(${name} PUBLIC ${SDL3_LIBRARIES})
+
 target_include_directories(${name} PUBLIC ./vendor/glm/)
 target_include_directories(${name} PUBLIC ./vendor/result/)

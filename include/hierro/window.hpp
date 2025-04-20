@@ -1,5 +1,8 @@
 #pragma once
 #include "hierro/utils/data.hpp"
+#include "hierro/backend/backend.hpp"
+#include "hierro/backend/glfw.hpp"
+#include <optional>
 #include <string>
 
 namespace hierro {
@@ -14,9 +17,13 @@ public:
   bool decorated = true;
   bool passthrough = false;
   bool transparent = false;
+  bool fullscreen = false;
   std::string title = "hierro";
   Color background = Color(0.2, 0.3, 0.3);
   bool blend = true;
+  // only with sdl backend
+  std::optional<unsigned long> x11_window = {};
+  Backend* backend = new GLFWBackend {};
 };
 
 } // namespace hierro

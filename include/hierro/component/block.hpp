@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <functional>
 #include <vector>
+#include "hierro/event/event.hpp"
 #include "hierro/shader.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
@@ -42,10 +43,14 @@ public:
   virtual Size& get_size() override;
   virtual std::vector<Component*>& get_children() override;
   virtual Component*& get_father() override;
-  virtual std::function<void(int, int, int)>& get_click_callback() override;
-  virtual std::function<void(int, int, int, int)>& get_key_callback() override;
+  virtual std::function<void(ClickEvent)>& get_click_callback() override;
+  virtual std::function<void(KeyEvent)>& get_key_callback() override;
   virtual std::function<void(unsigned int)>& get_input_callback() override;
   virtual std::function<void()>& get_focus_callback() override;
+  virtual std::function<void(MouseMoveEvent)>&
+  get_mouse_move_callback() override;
+  virtual std::function<void(MouseWheelEvent)>&
+  get_mouse_wheel_callback() override;
 
 private:
   void update_vertices();
@@ -54,11 +59,14 @@ private:
 
   bool texture_enabled = false;
 
-  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
-  std::function<void(int, int, int, int)> key_callback =
-    [](int, int, int, int) {};
+  std::function<void(ClickEvent)> click_callback = [](ClickEvent) {};
+  std::function<void(KeyEvent)> key_callback = [](KeyEvent) {};
   std::function<void(unsigned int)> input_callback = [](unsigned int) {};
   std::function<void()> focus_callback = [] {};
+  std::function<void(MouseMoveEvent)> mouse_move_callback = [](MouseMoveEvent) {
+  };
+  std::function<void(MouseWheelEvent)> mouse_wheel_callback =
+    [](MouseWheelEvent) {};
 };
 
 } // namespace hierro

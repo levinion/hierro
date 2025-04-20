@@ -1,4 +1,5 @@
 #include "hierro/widget/button.hpp"
+#include "hierro/event/event.hpp"
 
 namespace hierro {
 
@@ -21,15 +22,11 @@ Button::Button() {
     this->send_input_event(codepoint);
   });
 
-  block.on_key([&](int key, int scancode, int action, int mod) {
-    this->send_key_event(key, scancode, action, mod);
-  });
+  block.on_key([&](KeyEvent e) { this->send_key_event(e); });
 
   block.on_focus([&]() { this->send_focus_event(); });
 
-  block.on_click([&](int button, int action, int mods) {
-    this->send_click_event(button, action, mods);
-  });
+  block.on_click([&](ClickEvent e) { this->send_click_event(e); });
 
   this->block.add_child(&this->label);
   this->add_child(&this->block);

@@ -1,11 +1,10 @@
 #pragma once
 #include <cstdlib>
-#include <expected>
 #include <result/result.h>
 
 namespace hierro {
 
-using HierroError = const char*;
+using HierroError = std::string;
 
 template<typename T>
 using HierroResult = Result<T, HierroError>;

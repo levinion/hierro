@@ -157,6 +157,8 @@ void Block::init_shader() {
 }
 
 void Block::set_texture(cv::Mat& image) {
+  if (this->texture_enabled)
+    return;
   cv::flip(image, image, 0);
   unsigned int texture;
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -190,9 +192,10 @@ void Block::set_texture(cv::Mat& image) {
 }
 
 void Block::free_texture() {
-  if (this->texture != 0) {
+  if (this->texture_enabled) {
     glDeleteTextures(1, &this->texture);
     this->texture = 0;
+    this->texture_enabled = false;
   }
 }
 

@@ -4,7 +4,9 @@
 #include <random>
 #include "GLFW/glfw3.h"
 #include "hierro/app.hpp"
+#include "hierro/backend/sdl.hpp"
 #include "hierro/component/block.hpp"
+#include "hierro/window.hpp"
 
 using namespace hierro;
 
@@ -16,8 +18,10 @@ int main() {
 #define rand random(gen)
 
   auto app = Application::get_instance();
+  WindowSettings settings;
+  settings.backend = new SDLBackend();
   // this app did not need to render text
-  app->init(800, 600).unwrap();
+  app->init(settings).unwrap();
   Block block, block2;
   block.color = Color(rand, 0, 1);
   block.set_position(0.0, 1.0);

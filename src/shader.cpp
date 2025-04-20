@@ -2,6 +2,7 @@
 #include "hierro/shader.hpp"
 #include <GL/glext.h>
 #include <cstddef>
+#include "hierro/utils/log.hpp"
 
 namespace hierro {
 
@@ -25,6 +26,13 @@ Shader::Shader(const char* vertex, const char* fragment) {
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
+
+  GLint status = GL_TRUE;
+  glGetProgramiv(shader_program, GL_LINK_STATUS, &status);
+
+  if (status != GL_TRUE) {
+    LOG("error when link program:", shader_program);
+  }
 
   this->program = shader_program;
 }

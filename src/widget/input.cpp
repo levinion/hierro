@@ -1,6 +1,6 @@
 #include "hierro/widget/input.hpp"
-#include "GLFW/glfw3.h"
 #include "hierro/component/text.hpp"
+#include "hierro/event/event.hpp"
 
 namespace hierro {
 
@@ -27,18 +27,18 @@ Input::Input() {
     this->send_input_event(codepoint);
   });
 
-  block.on_key([&](int key, int scancode, int action, int mod) {
-    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-      if (key == GLFW_KEY_BACKSPACE) {
-        if (!label.content.empty()) {
-          label.content.pop_back();
-        }
-      }
-    }
-    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
-      label.content.push_back('\n');
-    }
-    this->send_key_event(key, scancode, action, mod);
+  block.on_key([&](KeyEvent e) {
+    // if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+    //   if (key == GLFW_KEY_BACKSPACE) {
+    //     if (!label.content.empty()) {
+    //       label.content.pop_back();
+    //     }
+    //   }
+    // }
+    // if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+    //   label.content.push_back('\n');
+    // }
+    this->send_key_event(e);
   });
 
   this->block.add_child(&this->label);
