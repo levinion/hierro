@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include "hierro/app.hpp"
 #include <strings.h>
+#include <chrono>
 #include <functional>
 #include <hierro/error.hpp>
 #include "hierro/component/component.hpp"
@@ -50,9 +51,15 @@ void Application::prepare() {
 
 void Application::run() {
   this->prepare();
+  std::chrono::high_resolution_clock clock;
   while (!backend->should_close()) {
+    auto start = clock.now();
     if (this->update())
       this->render();
+    auto end = clock.now();
+    const std::chrono::duration<double> _delta { end - start };
+    auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(_delta);
+    this->frame_rate = 1000.0 / delta.count();
   }
   this->destroy();
 }

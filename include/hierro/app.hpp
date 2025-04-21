@@ -102,6 +102,10 @@ public:
     return this->window_size();
   }
 
+  double get_frame_rate() {
+    return frame_rate;
+  }
+
 private:
   friend SDLBackend;
   friend GLFWBackend;
@@ -113,6 +117,8 @@ private:
   Component* focused = this; // focused should never be nullptr
 
   Backend* backend = new GLFWBackend {};
+
+  double frame_rate;
 };
 
 } // namespace hierro
