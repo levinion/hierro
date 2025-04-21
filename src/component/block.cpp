@@ -106,22 +106,22 @@ void Block::update_vertices() {
                      x,
                      y - height,
                      0.0,
-                     0.0,
+                     1.0,
                      // right down
                      x + width,
                      y - height,
                      1.0,
-                     0.0,
+                     1.0,
                      // left up
                      x,
                      y,
                      0.0,
-                     1.0,
+                     0.0,
                      // right up
                      x + width,
                      y,
                      1.0,
-                     1.0
+                     0.0
   };
 
   glBindVertexArray(this->vao);
@@ -156,30 +156,31 @@ void Block::init_shader() {
   this->shader = Shader(vertex_shader_code, fragment_shader_code);
 }
 
-void Block::set_texture(cv::Mat& image) {
+void Block::set_texture(char* pixels, int width, int height) {
   if (this->texture_enabled)
     return;
-  cv::flip(image, image, 0);
+  // cv::flip(image, image, 0);
   unsigned int texture;
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, image.step / image.elemSize());
+  // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  // glPixelStorei(GL_UNPACK_ROW_LENGTH, image.step / image.elemSize());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glTexImage2D(
     GL_TEXTURE_2D,
     0,
     GL_RGB,
-    image.cols,
-    image.rows,
+    width,
+    height,
     0,
-    GL_BGR,
+    GL_BGRA,
     GL_UNSIGNED_BYTE,
-    image.ptr()
+    pixels
   );
   glGenerateMipmap(GL_TEXTURE_2D);
   this->texture_enabled = true;

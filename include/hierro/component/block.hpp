@@ -26,7 +26,7 @@ public:
 
   // texture
   unsigned int texture;
-  void set_texture(cv::Mat& image);
+  void set_texture(char* pixels, int width, int height);
   void free_texture();
 
   Block();
