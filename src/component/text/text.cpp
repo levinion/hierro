@@ -1,8 +1,8 @@
 #include <glad/glad.h>
 #include <GL/gl.h>
-#include <ft2build.h>
-#include <freetype/freetype.h>
 #include <glm/glm.hpp>
+#include <freetype2/freetype/freetype.h>
+#include <freetype2/ft2build.h>
 #include "hierro/app.hpp"
 #include "hierro/error.hpp"
 #include "hierro/shader/text/vertex.hpp"
@@ -62,7 +62,7 @@ HierroResult<void> TextGenerater::init_freetype(std::string font) {
 HierroResult<void> TextGenerater::init_shader() {
   auto vertex = (const char*)_text_vertex_shader_code;
   auto fragment = (const char*)_text_fragment_shader_code;
-  auto shader = Shader(vertex, fragment);
+  auto shader = Shader("text_shader", vertex, fragment);
   this->shader = shader;
   auto app = Application::get_instance();
   auto size = app->window_size();

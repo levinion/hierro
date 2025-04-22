@@ -4,10 +4,9 @@
 #include "hierro/component/component.hpp"
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
-#include "hierro/shader.hpp"
-#include <libplacebo/shaders/custom.h>
-#include <libplacebo/shaders.h>
-#include <libplacebo/dispatch.h>
+#include "hierro/shader/shader.hpp"
+#include "hierro/shader/placebo.hpp"
+#include "hierro/utils/log.hpp"
 
 namespace hierro {
 
@@ -156,7 +155,8 @@ void Block::init_shader() {
   auto vertex_shader_code = (const char*)_block_vertex_shader_code;
   auto fragment_shader_code = (const char*)_block_fragment_shader_code;
 
-  this->shader = Shader(vertex_shader_code, fragment_shader_code);
+  this->shader =
+    Shader("block_shader", vertex_shader_code, fragment_shader_code);
 }
 
 void Block::set_texture(char* pixels, int width, int height) {
@@ -201,6 +201,15 @@ void Block::free_texture() {
     this->texture = 0;
     this->texture_enabled = false;
   }
+}
+
+void Block::load_custom_shader(const char* custom_shader) {
+  auto frag = parse_libplacebo_shader(custom_shader);
+  hierro::LOG(frag);
+  auto vertex = (const char*)_block_vertex_shader_code;
+  this->custom_shaders.push_back(
+    Shader("libplacebo_custom_shader", vertex, frag)
+  );
 }
 
 IMPL_COMPONENT(Block)

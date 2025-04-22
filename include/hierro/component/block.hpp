@@ -1,10 +1,9 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
 #include <functional>
 #include <vector>
 #include "hierro/event/event.hpp"
-#include "hierro/shader.hpp"
+#include "hierro/shader/shader.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 
@@ -52,6 +51,9 @@ public:
   virtual std::function<void(MouseWheelEvent)>&
   get_mouse_wheel_callback() override;
 
+  // custom api
+  void load_custom_shader(const char* shader_source);
+
 private:
   void update_vertices();
   void update_indices();
@@ -67,6 +69,8 @@ private:
   };
   std::function<void(MouseWheelEvent)> mouse_wheel_callback =
     [](MouseWheelEvent) {};
+
+  std::vector<Shader> custom_shaders;
 };
 
 } // namespace hierro

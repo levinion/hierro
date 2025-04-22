@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "freetype/freetype.h"
 #include "hierro/error.hpp"
-#include "hierro/shader.hpp"
+#include "hierro/shader/shader.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
