@@ -5,6 +5,9 @@
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
 #include "hierro/shader.hpp"
+#include <libplacebo/shaders/custom.h>
+#include <libplacebo/shaders.h>
+#include <libplacebo/dispatch.h>
 
 namespace hierro {
 
