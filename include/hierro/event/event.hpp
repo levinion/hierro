@@ -21,7 +21,10 @@ class KeyEvent {
 public:
   Key key;
   bool press; // false for release and true for press
-  inline bool is_pressed(Key key);
+
+  inline bool is_pressed(Key key) {
+    return this->keystate->contains(key);
+  };
 
 private:
   KeyState* keystate;
