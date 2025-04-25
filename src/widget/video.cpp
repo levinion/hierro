@@ -18,7 +18,7 @@ IMPL_COMPONENT(Video);
 
 static inline void check_error(int status) {
   if (status < 0) {
-    printf("mpv API error: %s\n", mpv_error_string(status));
+    spdlog::error("mpv api error: {}", mpv_error_string(status));
     exit(1);
   }
 }
@@ -34,7 +34,6 @@ static int64_t read_fn(void* cookie, char* buf, uint64_t nbytes) {
     std::this_thread::yield();
   }
   uint64_t to_copy = std::min<uint64_t>(frame.size, nbytes);
-  spdlog::debug("mpv receive frame: {}", to_copy);
   memcpy(buf, frame.data, to_copy);
   return to_copy;
 }
@@ -64,12 +63,6 @@ static void* get_proc_address_mpv(void* fn_ctx, const char* name) {
 Video::Video() {
   auto app = Application::get_instance();
   auto window_size = app->window_size();
-
-  spdlog::info(
-    "window_size - width: {}, height: {} ",
-    window_size.width,
-    window_size.height
-  );
 
   this->mpv = mpv_create();
   mpv_set_option_string(mpv, "vo", "libmpv");
@@ -128,7 +121,7 @@ void Video::push_frame(char* data, int size) {
   mpv_event* event = mpv_wait_event(mpv, 0);
   if (event->event_id == MPV_EVENT_LOG_MESSAGE) {
     mpv_event_log_message* msg = (mpv_event_log_message*)event->data;
-    printf("[%s] %s: %s", msg->prefix, msg->level, msg->text);
+    spdlog::error("[{}] {}: {}", msg->prefix, msg->level, msg->text);
   }
 }
 

@@ -136,7 +136,6 @@ bool SDLBackend::update() {
       case SDL_EVENT_KEY_UP: {
         KeyEvent e;
         e.key = static_cast<Key>(event.key.scancode);
-        e.mod = static_cast<Key>(event.key.mod);
         e.press = event.key.down;
         app->focused->send_key_event(e);
         break;

@@ -21,7 +21,6 @@ private:
 class KeyEvent {
 public:
   Key key;
-  Key mod;
   bool press; // false for release and true for press
 
 private:
