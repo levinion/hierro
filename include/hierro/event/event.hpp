@@ -2,12 +2,11 @@
 
 #include "hierro/backend/glfw.hpp"
 #include "hierro/backend/sdl.hpp"
-#include "hierro/event/keys.hpp"
+#include "hierro/event/keycode.hpp"
 
 namespace hierro {
 class ClickEvent {
 public:
-  //TODO: make propertities private
   MouseButton button; // button index;
   Position position = { 0, 0 }; // cursor pos
   bool single_click; // true for single click and false for double click
@@ -22,8 +21,10 @@ class KeyEvent {
 public:
   Key key;
   bool press; // false for release and true for press
+  inline bool is_pressed(Key key);
 
 private:
+  KeyState* keystate;
   friend SDLBackend;
   friend GLFWBackend;
 };

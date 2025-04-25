@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/event/event.hpp"
 
@@ -12,7 +13,7 @@ namespace hierro {
 class Component {
 public:
   // render api
-  virtual void draw() = 0;
+  virtual HierroResult<void> draw() = 0;
   // layout api
   virtual Position& get_position() = 0;
   virtual Size& get_size() = 0;
@@ -83,12 +84,13 @@ public:
     return cp;
   }
 
-  virtual void draw_children() {
+  virtual HierroResult<void> draw_children() {
     auto& children = this->get_children();
     for (auto& child : children) {
-      child->draw();
-      child->draw_children();
+      check(child->draw());
+      check(child->draw_children());
     }
+    return {};
   }
 
   virtual Component* on_click(std::function<void(ClickEvent e)> callback) {
@@ -197,7 +199,7 @@ public:
     [](MouseWheelEvent) {};
 
 #define COMPONENT_OVERRIDE_METHODS \
-  virtual void draw() override; \
+  virtual HierroResult<void> draw() override; \
   virtual Position& get_position() override; \
   virtual Size& get_size() override; \
   virtual std::vector<std::unique_ptr<Component>>& get_children() override; \

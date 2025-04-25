@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL_video.h>
 #include "hierro/backend/backend.hpp"
+#include "hierro/event/keystate.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -26,7 +27,7 @@ private:
   std::pair<int, int> gl_version = std::pair(3, 3);
   Size size = { 1.0f, 1.0f };
   Position position = { 0.0f, 1.0f };
-
   bool sdl_should_close = false;
+  KeyState keystate;
 };
 } // namespace hierro

@@ -1,9 +1,12 @@
 #include "hierro/widget/button.hpp"
+#include "hierro/error.hpp"
 #include "hierro/event/event.hpp"
 
 namespace hierro {
 
-void Button::draw() {};
+HierroResult<void> Button::draw() {
+  return {};
+};
 
 IMPL_COMPONENT(Button)
 

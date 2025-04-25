@@ -12,7 +12,9 @@
 
 namespace hierro {
 
-void Video::draw() {};
+HierroResult<void> Video::draw() {
+  return {};
+};
 
 IMPL_COMPONENT(Video);
 

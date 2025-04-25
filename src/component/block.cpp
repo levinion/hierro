@@ -2,6 +2,7 @@
 #include "hierro/component/block.hpp"
 #include "hierro/app.hpp"
 #include "hierro/component/component.hpp"
+#include "hierro/error.hpp"
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
 #include "hierro/shader/shader.hpp"
@@ -38,7 +39,7 @@ Block::Block() {
   glEnableVertexAttribArray(1);
 }
 
-void Block::draw() {
+HierroResult<void> Block::draw() {
   // send vertices before drawing
   this->update_vertices();
   this->shader.use();
@@ -88,6 +89,7 @@ void Block::draw() {
     this->border_color.b,
     this->border_color.a
   );
+  return {};
 }
 
 void Block::update_vertices() {

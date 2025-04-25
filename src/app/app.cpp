@@ -25,19 +25,20 @@ void Application::prepare() {
   backend->prepare();
 }
 
-void Application::run() {
+HierroResult<void> Application::run() {
   this->prepare();
   std::chrono::high_resolution_clock clock;
   while (!backend->should_close()) {
     auto start = clock.now();
     if (this->update())
-      this->render();
+      check(this->render());
     auto end = clock.now();
     const std::chrono::duration<double> _delta { end - start };
     auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(_delta);
     this->frame_rate = 1000.0 / delta.count();
   }
   this->destroy();
+  return {};
 }
 
 bool Application::update() {
@@ -46,13 +47,14 @@ bool Application::update() {
   return a || b;
 }
 
-void Application::render() {
+HierroResult<void> Application::render() {
   auto& color = this->background;
   glClearColor(color.r, color.g, color.b, color.a);
   glClear(GL_COLOR_BUFFER_BIT);
-  this->draw();
+  check(this->draw());
   this->render_callback();
   backend->render();
+  return {};
 }
 
 void Application::destroy() {
@@ -74,8 +76,8 @@ Position Application::cursor_pos() {
   return backend->cursor_pos();
 }
 
-void Application::draw() {
-  this->draw_children();
+HierroResult<void> Application::draw() {
+  return this->draw_children();
 }
 
 IMPL_COMPONENT(Application);

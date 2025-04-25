@@ -1,12 +1,12 @@
 #include "hierro/widget/input.hpp"
 #include "hierro/component/text.hpp"
+#include "hierro/error.hpp"
 #include "hierro/event/event.hpp"
 
 namespace hierro {
 
-void Input::draw() {
-  // this->block.draw();
-  // this->label.draw();
+HierroResult<void> Input::draw() {
+  return {};
 };
 
 IMPL_COMPONENT(Input)

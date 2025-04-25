@@ -2,6 +2,7 @@
 
 #include "GLFW/glfw3.h"
 #include "hierro/backend/backend.hpp"
+#include "hierro/event/keystate.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -26,6 +27,7 @@ private:
   std::pair<int, int> gl_version = std::pair(3, 3);
   Size size = { 1.0f, 1.0f };
   Position position = { 0.0f, 1.0f };
+  KeyState keystate;
 
   // glfw hooks
   static void

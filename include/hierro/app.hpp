@@ -1,6 +1,5 @@
 #pragma once
 
-#include <expected>
 #include <functional>
 #include <memory>
 #include <string>
@@ -9,6 +8,7 @@
 #include "hierro/backend/backend.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
+#include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/window.hpp"
 
@@ -18,7 +18,7 @@ class Application: public Component {
 public:
   // lifetime
   template<typename T>
-  std::expected<void, std::string> init(WindowSettings settings) {
+  HierroResult<void> init(WindowSettings settings) {
     static_assert(
       std::is_base_of<Backend, T>::value,
       "T should impl hierro::Backend"
@@ -26,10 +26,7 @@ public:
 
     this->backend.reset(new T);
 
-    auto result = backend->init(settings);
-    if (!result.has_value()) {
-      return std::unexpected(result.error());
-    }
+    check(backend->init(settings));
 
     glViewport(0, 0, this->size.width, this->size.height);
 
@@ -44,16 +41,16 @@ public:
     // init text generater
     if (!this->fonts.empty()) {
       // TODO: handle multiple fonts
-      this->tg->init(this->fonts[0], font_size);
+      check(this->tg->init(this->fonts[0], font_size));
     }
 
     return {};
   }
 
-  void run();
+  HierroResult<void> run();
   void prepare();
   bool update();
-  void render();
+  HierroResult<void> render();
   void destroy();
 
   // custom hooks

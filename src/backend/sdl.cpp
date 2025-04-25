@@ -5,17 +5,16 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_video.h>
-#include <expected>
 #include "hierro/app.hpp"
+#include "hierro/error.hpp"
 #include "hierro/event/event.hpp"
-#include "hierro/event/keys.hpp"
 #include "hierro/window.hpp"
 
 namespace hierro {
-std::expected<void, std::string> SDLBackend::init(WindowSettings settings) {
+HierroResult<void> SDLBackend::init(WindowSettings settings) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     auto message = "SDL ERROR: " + std::string(SDL_GetError());
-    return std::unexpected(message);
+    return err(message);
   }
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_version.first);
@@ -26,7 +25,7 @@ std::expected<void, std::string> SDLBackend::init(WindowSettings settings) {
   if (props == 0) {
     auto message =
       "Unable to create properties: %s" + std::string(SDL_GetError());
-    return std::unexpected(message);
+    return err(message);
   }
 
   SDL_SetStringProperty(
@@ -92,14 +91,14 @@ std::expected<void, std::string> SDLBackend::init(WindowSettings settings) {
   auto sdl_window = SDL_CreateWindowWithProperties(props);
 
   if (!sdl_window) {
-    return std::unexpected(
+    return err(
       "SDL ERROR: Cannot create window. " + std::string(SDL_GetError())
     );
   }
 
   SDL_GLContext gl_context = SDL_GL_CreateContext(sdl_window);
   if (!gl_context) {
-    return std::unexpected(
+    return err(
       "SDL ERROR: Cannot create GL context. " + std::string(SDL_GetError())
     );
   }
@@ -109,7 +108,7 @@ std::expected<void, std::string> SDLBackend::init(WindowSettings settings) {
   this->window = sdl_window;
 
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-    return std::unexpected("GLAD ERROR: Cannot load OpenGL.");
+    return err("GLAD ERROR: Cannot load OpenGL.");
   }
 
   return {};
@@ -136,7 +135,14 @@ bool SDLBackend::update() {
       case SDL_EVENT_KEY_UP: {
         KeyEvent e;
         e.key = static_cast<Key>(event.key.scancode);
+        // handle keystate
+        if (this->keystate.contains(e.key)) {
+          this->keystate.erase(e.key);
+        } else {
+          this->keystate.set(e.key);
+        }
         e.press = event.key.down;
+        e.keystate = &this->keystate;
         app->focused->send_key_event(e);
         break;
       }

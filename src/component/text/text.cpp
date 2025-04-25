@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GL/gl.h>
+#include <expected>
 #include <glm/glm.hpp>
 #include <freetype2/freetype/freetype.h>
 #include <freetype2/ft2build.h>
@@ -9,9 +10,9 @@
 #include "hierro/shader/text/fragment.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/component/text.hpp"
-#include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 #include FT_FREETYPE_H
 
 namespace hierro {
@@ -25,12 +26,13 @@ TextGenerater* TextGenerater::get_instance() {
   return TextGenerater::instance;
 }
 
-HierroResult<void> TextGenerater::init(std::string font, Size size) {
+std::expected<void, std::string>
+TextGenerater::init(std::string font, Size size) {
   this->font_size = size;
-  try(this->init_freetype(font));
-  try(this->init_shader());
-  try(this->init_buffer());
-  return ok();
+  check(this->init_freetype(font));
+  check(this->init_shader());
+  check(this->init_buffer());
+  return {};
 }
 
 // TODO: this should receive a font list
@@ -53,10 +55,11 @@ HierroResult<void> TextGenerater::init_freetype(std::string font) {
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
   for (char32_t c = 0; c < 128; c++) {
-    this->add_character(c);
+    if (auto r = this->add_character(c); !r)
+      return r;
     // FT_Render_Glyph(face->glyph, FT_RENDER_MODE_SDF);
   }
-  return ok();
+  return {};
 }
 
 HierroResult<void> TextGenerater::init_shader() {
@@ -79,7 +82,7 @@ HierroResult<void> TextGenerater::init_shader() {
     GL_FALSE,
     glm::value_ptr(projection)
   );
-  return ok();
+  return {};
 }
 
 HierroResult<void> TextGenerater::init_buffer() {
@@ -94,10 +97,10 @@ HierroResult<void> TextGenerater::init_buffer() {
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  return ok();
+  return {};
 }
 
-void TextGenerater::draw_text(
+HierroResult<void> TextGenerater::draw_text(
   std::wstring text,
   Position position,
   Size size,
@@ -137,7 +140,7 @@ void TextGenerater::draw_text(
       }
 
       if (!this->character_table.contains(*c)) {
-        this->add_character(*c);
+        check(this->add_character(*c));
       }
 
       auto ch = this->character_table[*c];
@@ -224,7 +227,7 @@ void TextGenerater::draw_text(
     }
 
     if (!this->character_table.contains(*c)) {
-      this->add_character(*c);
+      check(this->add_character(*c));
     }
 
     auto ch = this->character_table[*c];
@@ -268,6 +271,7 @@ void TextGenerater::draw_text(
   }
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
+  return {};
 }
 
 void TextGenerater::viewport(float x, float y) {
@@ -282,11 +286,9 @@ void TextGenerater::viewport(float x, float y) {
   );
 }
 
-HierroResult<void> TextGenerater::add_character(char32_t c) {
+std::expected<void, std::string> TextGenerater::add_character(char32_t c) {
   if (FT_Load_Char(this->face, c, FT_LOAD_RENDER)) {
-    // TODO: if failed to load glyph, should get it from another face as fallback
-    std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-    return ok();
+    return err("failed to load glyph");
   }
 
   unsigned int texture;
@@ -316,7 +318,7 @@ HierroResult<void> TextGenerater::add_character(char32_t c) {
     (unsigned int)face->glyph->advance.x
   };
   this->character_table.insert(std::pair<char32_t, Character>(c, character));
-  return ok();
+  return {};
 }
 
 void TextGenerater::destroy() {

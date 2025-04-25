@@ -1,32 +1,17 @@
 #pragma once
 #include <cstdlib>
-#include <result/result.h>
+#include <expected>
+#include <string>
 
 namespace hierro {
 
-using HierroError = std::string;
-
 template<typename T>
-using HierroResult = Result<T, HierroError>;
+using HierroResult = std::expected<T, std::string>;
 
-template<typename T>
-HierroResult<T> ok(T value);
+#define check(x) \
+  if (auto r = x; !r) \
+  return r
 
-template<typename T>
-HierroResult<T> err(HierroError error);
-
-HierroResult<void> ok();
-
-HierroResult<void> err(HierroError error);
-
-template<typename T>
-HierroResult<T> ok(T value) {
-  return HierroResult<T>::ok(value);
-}
-
-template<typename T>
-HierroResult<T> err(HierroError error) {
-  return HierroResult<T>::err(error);
-}
+#define err(x) std::unexpected(x)
 
 } // namespace hierro
