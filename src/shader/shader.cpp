@@ -3,7 +3,7 @@
 #include <GL/glext.h>
 #include <cstddef>
 #include <string>
-#include "hierro/utils/log.hpp"
+#include <spdlog/spdlog.h>
 
 namespace hierro {
 
@@ -16,8 +16,8 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
   {
     GLint status = GL_TRUE;
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &status);
-    if (status != GL_TRUE) { /* 查询并打印错误日志 */
-      LOG("error when compile fragment_shader:", name);
+    if (status != GL_TRUE) {
+      spdlog::error("error when compile fragment_shader: {}", name);
     }
   }
 
@@ -30,7 +30,7 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
     GLint status = GL_TRUE;
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-      LOG("error when compile fragment_shader:", name);
+      spdlog::error("error when compile fragment_shader:", name);
     }
   }
 
@@ -49,7 +49,7 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
     glGetProgramiv(shader_program, GL_LINK_STATUS, &status);
 
     if (status != GL_TRUE) {
-      LOG("error when link program:", name);
+      spdlog::error("error when link program:", name);
     }
   }
 

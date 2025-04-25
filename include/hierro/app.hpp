@@ -1,14 +1,14 @@
 #pragma once
 
+#include <expected>
 #include <functional>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 #include "hierro/backend/backend.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
-#include "hierro/error.hpp"
-#include "hierro/event/event.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/window.hpp"
 
@@ -17,7 +17,39 @@ namespace hierro {
 class Application: public Component {
 public:
   // lifetime
-  HierroResult<void> init(WindowSettings settings);
+  template<typename T>
+  std::expected<void, std::string> init(WindowSettings settings) {
+    static_assert(
+      std::is_base_of<Backend, T>::value,
+      "T should impl hierro::Backend"
+    );
+
+    this->backend.reset(new T);
+
+    auto result = backend->init(settings);
+    if (!result.has_value()) {
+      return std::unexpected(result.error());
+    }
+
+    glViewport(0, 0, this->size.width, this->size.height);
+
+    this->background = settings.background;
+    glClearColor(background.r, background.g, background.b, background.a);
+
+    if (settings.blend) {
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+    }
+
+    // init text generater
+    if (!this->fonts.empty()) {
+      // TODO: handle multiple fonts
+      this->tg->init(this->fonts[0], font_size);
+    }
+
+    return {};
+  }
+
   void run();
   void prepare();
   bool update();
@@ -60,36 +92,17 @@ public:
   std::function<void()> destroy_callback = [] {};
 
   // common hooks
-  std::function<void(ClickEvent)> click_callback = [](ClickEvent) {};
-  std::function<void(KeyEvent)> key_callback = [](KeyEvent) {};
-  std::function<void(unsigned int)> input_callback = [](unsigned int) {};
-  std::function<void()> focus_callback = [] {};
-  std::function<void(MouseMoveEvent)> mouse_move_callback = [](MouseMoveEvent) {
-  };
-  std::function<void(MouseWheelEvent)> mouse_wheel_callback =
-    [](MouseWheelEvent) {};
+  COMPONENT_DEFAULT_CALLBACK
 
   // impl Component
   // Component params
   Size size = { 1.0f, 1.0f };
   Position position = { 0.0f, 1.0f };
-  std::vector<Component*> children;
+  std::vector<std::unique_ptr<Component>> children;
   Component* father = nullptr;
 
   // Component trait
-  virtual void draw() override;
-  virtual Position& get_position() override;
-  virtual Size& get_size() override;
-  virtual std::vector<Component*>& get_children() override;
-  virtual Component*& get_father() override;
-  virtual std::function<void(ClickEvent)>& get_click_callback() override;
-  virtual std::function<void(KeyEvent)>& get_key_callback() override;
-  virtual std::function<void(unsigned int)>& get_input_callback() override;
-  virtual std::function<void()>& get_focus_callback() override;
-  virtual std::function<void(MouseMoveEvent)>&
-  get_mouse_move_callback() override;
-  virtual std::function<void(MouseWheelEvent)>&
-  get_mouse_wheel_callback() override;
+  COMPONENT_OVERRIDE_METHODS
 
   // override root position to break recurse
   virtual Position absolute_position() override {
@@ -110,13 +123,13 @@ private:
   friend SDLBackend;
   friend GLFWBackend;
 
-  static Application* instance;
+  static std::unique_ptr<Application> instance;
 
   // call this to re-search focus
   void search_focus(float x, float y);
   Component* focused = this; // focused should never be nullptr
 
-  Backend* backend = new GLFWBackend {};
+  std::unique_ptr<Backend> backend;
 
   double frame_rate;
 };

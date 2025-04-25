@@ -1,7 +1,5 @@
 #pragma once
 #include "hierro/utils/data.hpp"
-#include "hierro/backend/backend.hpp"
-#include "hierro/backend/glfw.hpp"
 #include <optional>
 #include <string>
 
@@ -23,7 +21,6 @@ public:
   bool blend = true;
   // only with sdl backend
   std::optional<unsigned long> x11_window = {};
-  Backend* backend = new GLFWBackend {};
 };
 
 } // namespace hierro

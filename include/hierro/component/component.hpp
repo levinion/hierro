@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <functional>
+#include <memory>
 #include <vector>
 #include "hierro/utils/data.hpp"
 #include "hierro/event/event.hpp"
@@ -15,7 +16,7 @@ public:
   // layout api
   virtual Position& get_position() = 0;
   virtual Size& get_size() = 0;
-  virtual std::vector<Component*>& get_children() = 0;
+  virtual std::vector<std::unique_ptr<Component>>& get_children() = 0;
   virtual Component*& get_father() = 0;
   // hook api
   virtual std::function<void(ClickEvent)>& get_click_callback() = 0;
@@ -65,14 +66,21 @@ public:
     size.height = height;
   }
 
-  virtual Component* add_child(Component* child) {
+  template<typename T>
+  T* add_child() {
+    static_assert(
+      std::is_base_of<Component, T>::value,
+      "T should impl hierro::Component"
+    );
+    auto child = std::make_unique<T>();
     auto& father = child->get_father();
     assert(father == nullptr);
     father = this;
     assert(father != nullptr);
     auto& children = this->get_children();
-    children.push_back(child);
-    return this;
+    auto cp = child.get();
+    children.push_back(std::move(child));
+    return cp;
   }
 
   virtual void draw_children() {
@@ -169,7 +177,7 @@ public:
 #define IMPL_COMPONENT(T) \
   GET_REF(Position, T, position) \
   GET_REF(Size, T, size) \
-  GET_REF(std::vector<Component*>, T, children) \
+  GET_REF(std::vector<std::unique_ptr<Component>>, T, children) \
   GET_REF(Component*, T, father) \
   GET_REF(std::function<void(ClickEvent)>, T, click_callback) \
   GET_REF(std::function<void(KeyEvent)>, T, key_callback) \
@@ -177,5 +185,30 @@ public:
   GET_REF(std::function<void(MouseWheelEvent)>, T, mouse_wheel_callback) \
   GET_REF(std::function<void(unsigned int)>, T, input_callback) \
   GET_REF(std::function<void()>, T, focus_callback)
+
+#define COMPONENT_DEFAULT_CALLBACK \
+  std::function<void(ClickEvent)> click_callback = [](ClickEvent) {}; \
+  std::function<void(KeyEvent)> key_callback = [](KeyEvent) {}; \
+  std::function<void(unsigned int)> input_callback = [](unsigned int) {}; \
+  std::function<void()> focus_callback = [] {}; \
+  std::function<void(MouseMoveEvent)> mouse_move_callback = \
+    [](MouseMoveEvent) {}; \
+  std::function<void(MouseWheelEvent)> mouse_wheel_callback = \
+    [](MouseWheelEvent) {};
+
+#define COMPONENT_OVERRIDE_METHODS \
+  virtual void draw() override; \
+  virtual Position& get_position() override; \
+  virtual Size& get_size() override; \
+  virtual std::vector<std::unique_ptr<Component>>& get_children() override; \
+  virtual Component*& get_father() override; \
+  virtual std::function<void(ClickEvent)>& get_click_callback() override; \
+  virtual std::function<void(KeyEvent)>& get_key_callback() override; \
+  virtual std::function<void(unsigned int)>& get_input_callback() override; \
+  virtual std::function<void()>& get_focus_callback() override; \
+  virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() \
+    override; \
+  virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() \
+    override;
 
 } // namespace hierro

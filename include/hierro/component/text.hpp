@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
-#include "freetype/freetype.h"
+#include "freetype2/freetype/freetype.h"
 #include "hierro/error.hpp"
 #include "hierro/shader/shader.hpp"
 #include "hierro/utils/data.hpp"

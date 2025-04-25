@@ -19,6 +19,7 @@ target_link_options(${name} PRIVATE -static-libgcc -static-libstdc++)
 
 # third party
 
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 target_link_libraries(${name} PUBLIC OpenGL::GL)
 
@@ -32,8 +33,8 @@ target_link_libraries(${name} PUBLIC ${SDL3_LIBRARIES})
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(PLACEBO REQUIRED libplacebo)
-target_link_libraries(${name} PUBLIC ${PLACEBO_LIBRARIES})
+pkg_check_modules(Mpv REQUIRED mpv)
+target_link_libraries(${name} PUBLIC mpv)
 
 include_directories(/usr/include/freetype2)
 pkg_check_modules(Freetype2 REQUIRED freetype2)
@@ -42,5 +43,9 @@ target_link_libraries(${name} PUBLIC ${Freetype2_LIBRARIES})
 pkg_check_modules(GLFW3 REQUIRED glfw3)
 target_link_libraries(${name} PUBLIC ${GLFW3_LIBRARIES})
 
+pkg_check_modules(spdlog REQUIRED spdlog)
+target_link_libraries(${name} PRIVATE ${spdlog_LIBRARIES})
+
 target_include_directories(${name} PUBLIC ./vendor/glm/)
 target_include_directories(${name} PUBLIC ./vendor/result/)
+target_include_directories(${name} PUBLIC ./vendor/concurrentqueue)

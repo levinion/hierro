@@ -7,7 +7,8 @@
 namespace hierro {
 class GLFWBackend: public Backend {
 public:
-  virtual hierro::HierroResult<void> init(WindowSettings settings) override;
+  virtual std::expected<void, std::string>
+  init(WindowSettings settings) override;
   virtual bool should_close() override;
   virtual void prepare() override;
   virtual bool update() override;

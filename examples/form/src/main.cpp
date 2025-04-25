@@ -4,7 +4,6 @@
 #include "hierro/app.hpp"
 #include "hierro/component/label.hpp"
 #include "hierro/component/text.hpp"
-#include "hierro/utils/log.hpp"
 #include "hierro/widget/input.hpp"
 #include "hierro/widget/button.hpp"
 
@@ -33,9 +32,7 @@ int main() {
   button.set_position(0, 1);
   button.set_size(0.1, 0.1);
   button.on_click([&](auto but, auto action, auto mods) {
-    if (but == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-      LOG("clicked");
-    }
+    if (but == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {}
   });
 
   container.add_child(&label)->add_child(&input);

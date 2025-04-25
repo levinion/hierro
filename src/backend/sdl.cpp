@@ -5,17 +5,17 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_video.h>
+#include <expected>
 #include "hierro/app.hpp"
-#include "hierro/error.hpp"
 #include "hierro/event/event.hpp"
 #include "hierro/event/keys.hpp"
 #include "hierro/window.hpp"
 
 namespace hierro {
-HierroResult<void> SDLBackend::init(WindowSettings settings) {
+std::expected<void, std::string> SDLBackend::init(WindowSettings settings) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     auto message = "SDL ERROR: " + std::string(SDL_GetError());
-    return err(message);
+    return std::unexpected(message);
   }
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_version.first);
@@ -26,7 +26,7 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   if (props == 0) {
     auto message =
       "Unable to create properties: %s" + std::string(SDL_GetError());
-    return err(message);
+    return std::unexpected(message);
   }
 
   SDL_SetStringProperty(
@@ -92,14 +92,14 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   auto sdl_window = SDL_CreateWindowWithProperties(props);
 
   if (!sdl_window) {
-    return err(
+    return std::unexpected(
       "SDL ERROR: Cannot create window. " + std::string(SDL_GetError())
     );
   }
 
   SDL_GLContext gl_context = SDL_GL_CreateContext(sdl_window);
   if (!gl_context) {
-    return err(
+    return std::unexpected(
       "SDL ERROR: Cannot create GL context. " + std::string(SDL_GetError())
     );
   }
@@ -109,10 +109,10 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   this->window = sdl_window;
 
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-    return err("GLAD ERROR: Cannot load OpenGL.");
+    return std::unexpected("GLAD ERROR: Cannot load OpenGL.");
   }
 
-  return ok();
+  return {};
 }
 
 void SDLBackend::prepare() {}
@@ -145,7 +145,6 @@ bool SDLBackend::update() {
       case SDL_EVENT_MOUSE_BUTTON_UP: {
         auto app = Application::get_instance();
         auto cursor_pos = app->cursor_pos();
-        assert(app->focused);
         if (event.button.button == SDL_BUTTON_LEFT && event.button.down) {
           app->search_focus(cursor_pos.x, cursor_pos.y);
         }

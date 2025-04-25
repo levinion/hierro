@@ -5,8 +5,6 @@
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
 #include "hierro/shader/shader.hpp"
-#include "hierro/shader/placebo.hpp"
-#include "hierro/utils/log.hpp"
 
 namespace hierro {
 
@@ -186,6 +184,7 @@ void Block::set_texture(char* pixels, int width, int height) {
     pixels
   );
   glGenerateMipmap(GL_TEXTURE_2D);
+
   this->texture_enabled = true;
   this->texture = texture;
 
@@ -203,14 +202,14 @@ void Block::free_texture() {
   }
 }
 
-void Block::load_custom_shader(const char* custom_shader) {
-  auto frag = parse_libplacebo_shader(custom_shader);
-  hierro::LOG(frag);
-  auto vertex = (const char*)_block_vertex_shader_code;
-  this->custom_shaders.push_back(
-    Shader("libplacebo_custom_shader", vertex, frag)
-  );
-}
+// void Block::load_custom_shader(const char* custom_shader) {
+//   auto frag = parse_libplacebo_shader(custom_shader);
+//   hierro::LOG(frag);
+//   auto vertex = (const char*)_block_vertex_shader_code;
+//   this->custom_shaders.push_back(
+//     Shader("libplacebo_custom_shader", vertex, frag)
+//   );
+// }
 
 IMPL_COMPONENT(Block)
 

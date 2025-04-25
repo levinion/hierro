@@ -4,45 +4,21 @@
 #include <chrono>
 #include <functional>
 #include <hierro/error.hpp>
+#include <memory>
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/backend/backend.hpp"
+#include <spdlog/spdlog.h>
 
 namespace hierro {
 
-Application* Application::instance = nullptr;
+std::unique_ptr<Application> Application::instance = nullptr;
 
 Application* Application::get_instance() {
-  if (Application::instance == nullptr) {
-    Application::instance = new Application();
+  if (Application::instance.get() == nullptr) {
+    instance.reset(new Application);
   }
-  return Application::instance;
-}
-
-HierroResult<void> Application::init(WindowSettings settings) {
-  this->backend = settings.backend;
-  auto result = backend->init(settings);
-  if (!result.has_value()) {
-    return result;
-  }
-
-  glViewport(0, 0, this->size.width, this->size.height);
-
-  this->background = settings.background;
-  glClearColor(background.r, background.g, background.b, background.a);
-
-  if (settings.blend) {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-  }
-
-  // init text generater
-  if (!this->fonts.empty()) {
-    // TODO: handle multiple fonts
-    this->tg->init(this->fonts[0], font_size);
-  }
-
-  return ok();
+  return instance.get();
 }
 
 void Application::prepare() {
@@ -75,8 +51,8 @@ void Application::render() {
   glClearColor(color.r, color.g, color.b, color.a);
   glClear(GL_COLOR_BUFFER_BIT);
   this->draw();
-  backend->render();
   this->render_callback();
+  backend->render();
 }
 
 void Application::destroy() {
@@ -85,10 +61,16 @@ void Application::destroy() {
 }
 
 Size Application::window_size() {
+  assert(
+    backend.get() && "backend should be initialized before calling window_size"
+  );
   return backend->window_size();
 }
 
 Position Application::cursor_pos() {
+  assert(
+    backend.get() && "backend should be initialized before calling window_size"
+  );
   return backend->cursor_pos();
 }
 
@@ -99,11 +81,16 @@ void Application::draw() {
 IMPL_COMPONENT(Application);
 
 void Application::search_focus(float x, float y) {
-  std::function<void(Component*, float, float, Component*&)> range_tree =
-    [&](Component* node, float x, float y, Component*& focused) {
+  std::function<void(std::unique_ptr<Component>&, float, float, Component*&)>
+    range_tree = [&](
+                   std::unique_ptr<Component>& node,
+                   float x,
+                   float y,
+                   Component*& focused
+                 ) {
       if (node) {
         if (node->is_hitted(x, y)) {
-          focused = node;
+          focused = node.get();
         }
         for (auto& child : node->get_children()) {
           range_tree(child, x, y, focused);

@@ -5,7 +5,7 @@ init_windows:
   cmake -B build -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake
 
 build:
-  cmake --build build
+  cmake --build build -j 8
 
 embed:
   - mkdir -p ./include/hierro/shader/block

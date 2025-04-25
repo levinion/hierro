@@ -1,6 +1,7 @@
 #pragma once
 
-#include "hierro/error.hpp"
+#include <string>
+#include <expected>
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -10,7 +11,9 @@ class WindowSettings;
 
 class Backend {
 public:
-  virtual hierro::HierroResult<void> init(WindowSettings settings) = 0;
+  virtual ~Backend() = default;
+
+  virtual std::expected<void, std::string> init(WindowSettings settings) = 0;
   virtual void prepare() = 0;
   virtual bool update() = 0;
   virtual void render() = 0;

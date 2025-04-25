@@ -1,13 +1,15 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "hierro/backend/glfw.hpp"
+#include <expected>
+#include <string>
 #include "hierro/event/event.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/window.hpp"
 #include "hierro/app.hpp"
 
 namespace hierro {
-HierroResult<void> GLFWBackend::init(WindowSettings settings) {
+std::expected<void, std::string> GLFWBackend::init(WindowSettings settings) {
   // init GLFW
   glfwInit();
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, this->gl_version.first);
@@ -46,10 +48,10 @@ HierroResult<void> GLFWBackend::init(WindowSettings settings) {
 
   // require opengl api with glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    return err("GLAD ERROR: glad cannot get load gl proc address.");
+    return std::unexpected("GLAD ERROR: glad cannot get load gl proc address.");
   }
 
-  return ok();
+  return {};
 }
 
 void GLFWBackend::prepare() {
