@@ -130,7 +130,6 @@ void GLFWBackend::glfw_key_callback(
   assert(app->focused);
   KeyEvent e;
   e.key = static_cast<Key>(scancode);
-  e.mod = static_cast<Key>(mod);
   app->focused->send_key_event(e);
 }
 
