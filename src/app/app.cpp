@@ -31,7 +31,7 @@ HierroResult<void> Application::run() {
   while (!backend->should_close()) {
     auto start = clock.now();
     if (this->update())
-      check(this->render());
+      hierro_check(this->render());
     auto end = clock.now();
     const std::chrono::duration<double> _delta { end - start };
     auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(_delta);
@@ -51,7 +51,7 @@ HierroResult<void> Application::render() {
   auto& color = this->background;
   glClearColor(color.r, color.g, color.b, color.a);
   glClear(GL_COLOR_BUFFER_BIT);
-  check(this->draw());
+  hierro_check(this->draw());
   this->render_callback();
   backend->render();
   return {};

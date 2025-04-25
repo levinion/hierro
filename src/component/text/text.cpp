@@ -29,9 +29,9 @@ TextGenerater* TextGenerater::get_instance() {
 std::expected<void, std::string>
 TextGenerater::init(std::string font, Size size) {
   this->font_size = size;
-  check(this->init_freetype(font));
-  check(this->init_shader());
-  check(this->init_buffer());
+  hierro_check(this->init_freetype(font));
+  hierro_check(this->init_shader());
+  hierro_check(this->init_buffer());
   return {};
 }
 
@@ -39,11 +39,11 @@ TextGenerater::init(std::string font, Size size) {
 HierroResult<void> TextGenerater::init_freetype(std::string font) {
   FT_Library ft;
   if (FT_Init_FreeType(&ft))
-    return err("ERROR::FREETYPE: Could not init FreeType Library");
+    return hierro_err("ERROR::FREETYPE: Could not init FreeType Library");
 
   FT_Face face;
   if (FT_New_Face(ft, font.c_str(), 0, &face))
-    return err("ERROR::FREETYPE: Failed to load font");
+    return hierro_err("ERROR::FREETYPE: Failed to load font");
 
   this->face = face;
   this->ft = ft;
@@ -140,7 +140,7 @@ HierroResult<void> TextGenerater::draw_text(
       }
 
       if (!this->character_table.contains(*c)) {
-        check(this->add_character(*c));
+        hierro_check(this->add_character(*c));
       }
 
       auto ch = this->character_table[*c];
@@ -227,7 +227,7 @@ HierroResult<void> TextGenerater::draw_text(
     }
 
     if (!this->character_table.contains(*c)) {
-      check(this->add_character(*c));
+      hierro_check(this->add_character(*c));
     }
 
     auto ch = this->character_table[*c];
@@ -288,7 +288,7 @@ void TextGenerater::viewport(float x, float y) {
 
 std::expected<void, std::string> TextGenerater::add_character(char32_t c) {
   if (FT_Load_Char(this->face, c, FT_LOAD_RENDER)) {
-    return err("failed to load glyph");
+    return hierro_err("failed to load glyph");
   }
 
   unsigned int texture;

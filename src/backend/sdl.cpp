@@ -14,7 +14,7 @@ namespace hierro {
 HierroResult<void> SDLBackend::init(WindowSettings settings) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     auto message = "SDL ERROR: " + std::string(SDL_GetError());
-    return err(message);
+    return hierro_err(message);
   }
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_version.first);
@@ -25,7 +25,7 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   if (props == 0) {
     auto message =
       "Unable to create properties: %s" + std::string(SDL_GetError());
-    return err(message);
+    return hierro_err(message);
   }
 
   SDL_SetStringProperty(
@@ -91,14 +91,14 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   auto sdl_window = SDL_CreateWindowWithProperties(props);
 
   if (!sdl_window) {
-    return err(
+    return hierro_err(
       "SDL ERROR: Cannot create window. " + std::string(SDL_GetError())
     );
   }
 
   SDL_GLContext gl_context = SDL_GL_CreateContext(sdl_window);
   if (!gl_context) {
-    return err(
+    return hierro_err(
       "SDL ERROR: Cannot create GL context. " + std::string(SDL_GetError())
     );
   }
@@ -108,7 +108,7 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
   this->window = sdl_window;
 
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-    return err("GLAD ERROR: Cannot load OpenGL.");
+    return hierro_err("GLAD ERROR: Cannot load OpenGL.");
   }
 
   return {};

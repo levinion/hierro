@@ -87,8 +87,8 @@ public:
   virtual HierroResult<void> draw_children() {
     auto& children = this->get_children();
     for (auto& child : children) {
-      check(child->draw());
-      check(child->draw_children());
+      hierro_check(child->draw());
+      hierro_check(child->draw_children());
     }
     return {};
   }

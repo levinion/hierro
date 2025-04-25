@@ -26,7 +26,7 @@ public:
 
     this->backend.reset(new T);
 
-    check(backend->init(settings));
+    hierro_check(backend->init(settings));
 
     glViewport(0, 0, this->size.width, this->size.height);
 
@@ -41,7 +41,7 @@ public:
     // init text generater
     if (!this->fonts.empty()) {
       // TODO: handle multiple fonts
-      check(this->tg->init(this->fonts[0], font_size));
+      hierro_check(this->tg->init(this->fonts[0], font_size));
     }
 
     return {};

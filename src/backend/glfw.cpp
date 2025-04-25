@@ -48,7 +48,7 @@ HierroResult<void> GLFWBackend::init(WindowSettings settings) {
 
   // require opengl api with glad
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    return err("GLAD ERROR: glad cannot get load gl proc address.");
+    return hierro_err("GLAD ERROR: glad cannot get load gl proc address.");
   }
 
   return {};
