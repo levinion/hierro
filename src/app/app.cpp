@@ -5,6 +5,7 @@
 #include <functional>
 #include <hierro/error.hpp>
 #include <memory>
+#include <thread>
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/backend/backend.hpp"
@@ -40,8 +41,11 @@ HierroResult<void> Application::run() {
 
     if (this->frame_limit && this->frame_limit.value() < frame_rate) {
       this->frame_rate = this->frame_limit.value();
-      auto time_per_frame = 1000.0 / this->frame_limit.value();
-      usleep((time_per_frame - delta.count()) * 1000.0);
+      auto time_per_frame =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::duration<double>(1000.0 / this->frame_limit.value())
+        );
+      std::this_thread::sleep_for(time_per_frame - delta);
     } else {
       this->frame_rate = frame_rate;
     }
