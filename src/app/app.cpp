@@ -1,15 +1,14 @@
 #include <glad/glad.h>
 #include "hierro/app.hpp"
 #include <strings.h>
-#include <chrono>
 #include <functional>
 #include <hierro/error.hpp>
 #include <memory>
-#include <thread>
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/backend/backend.hpp"
 #include <spdlog/spdlog.h>
+#include "hierro/utils/frame_counter.hpp"
 
 namespace hierro {
 
@@ -28,26 +27,19 @@ void Application::prepare() {
 
 HierroResult<void> Application::run() {
   this->prepare();
-  std::chrono::steady_clock clock;
+  FrameCounter fc;
+  if (this->frame_limit)
+    fc.set_frame_limit(this->frame_limit.value());
   while (!backend->should_close()) {
-    auto start = clock.now();
+    fc.start();
     if (this->update())
       hierro_check(this->render());
-    auto end = clock.now();
-    const std::chrono::duration<double> _delta { end - start };
-    auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(_delta);
-
-    auto frame_rate = 1000.0 / delta.count();
-
-    if (this->frame_limit && this->frame_limit.value() < frame_rate) {
-      this->frame_rate = this->frame_limit.value();
-      auto time_per_frame =
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-          std::chrono::duration<double>(1000.0 / this->frame_limit.value())
-        );
-      std::this_thread::sleep_for(time_per_frame - delta);
-    } else {
-      this->frame_rate = frame_rate;
+    fc.end();
+    if (!this->frame_limit)
+      this->frame_rate = fc.get_frame_rate();
+    else {
+      fc.wait_until_limit();
+      this->frame_rate = fc.get_frame_rate();
     }
   }
   this->destroy();
