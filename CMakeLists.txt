@@ -26,6 +26,9 @@ target_link_libraries(${name} PUBLIC OpenGL::GL)
 add_subdirectory(./vendor/glad)
 target_link_libraries(${name} PUBLIC glad)
 
+add_subdirectory(./vendor/magic_enum)
+target_link_libraries(${name} PUBLIC magic_enum)
+
 find_package(Freetype REQUIRED)
 
 find_package(SDL3 REQUIRED)
