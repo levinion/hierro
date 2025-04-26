@@ -19,6 +19,7 @@ class FrameStream {
 public:
   moodycamel::ConcurrentQueue<Frame> stream;
   std::atomic<bool> update_flag;
+  std::atomic<bool> should_close;
 };
 
 class Video: public Component {
