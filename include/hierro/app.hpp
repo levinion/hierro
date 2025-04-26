@@ -23,7 +23,6 @@ public:
       std::is_base_of<Backend, T>::value,
       "T should impl hierro::Backend"
     );
-
     this->backend.reset(new T);
 
     hierro_check(backend->init(settings));
@@ -37,6 +36,8 @@ public:
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_BLEND);
     }
+
+    this->frame_limit = settings.frame_limit;
 
     // init text generater
     if (!this->fonts.empty()) {
@@ -102,17 +103,17 @@ public:
   COMPONENT_OVERRIDE_METHODS
 
   // override root position to break recurse
-  virtual Position absolute_position() override {
+  inline virtual Position absolute_position() override {
     auto size = this->window_size();
     return { 0, size.height };
   }
 
   // override root size to break recurse
-  virtual Size absolute_size() override {
+  inline virtual Size absolute_size() override {
     return this->window_size();
   }
 
-  double get_frame_rate() {
+  inline double get_frame_rate() {
     return frame_rate;
   }
 
@@ -129,6 +130,7 @@ private:
   std::unique_ptr<Backend> backend;
 
   double frame_rate;
+  std::optional<double> frame_limit;
 };
 
 } // namespace hierro

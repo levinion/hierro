@@ -19,6 +19,7 @@ public:
   std::string title = "hierro";
   Color background = Color(0.2, 0.3, 0.3);
   bool blend = true;
+  std::optional<double> frame_limit;
   // only with sdl backend
   std::optional<unsigned long> x11_window = {};
 };

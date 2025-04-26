@@ -15,6 +15,12 @@ public:
   int size;
 };
 
+class FrameStream {
+public:
+  moodycamel::ConcurrentQueue<Frame> stream;
+  std::atomic<bool> update_flag;
+};
+
 class Video: public Component {
 public:
   // impl Component
@@ -36,7 +42,7 @@ private:
   mpv_handle* mpv;
   std::vector<mpv_render_param> params;
 
-  moodycamel::ConcurrentQueue<Frame> frame_stream;
+  FrameStream frame_stream;
 
   mpv_opengl_fbo mpfbo = { .fbo = 0, .w = 0, .h = 0 };
   int flip_y = 1;

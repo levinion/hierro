@@ -8,7 +8,6 @@
 #include <concurrentqueue.h>
 #include "hierro/app.hpp"
 #include <spdlog/spdlog.h>
-#include <thread>
 
 namespace hierro {
 
@@ -30,10 +29,11 @@ static int64_t size_fn(void* cookie) {
 }
 
 static int64_t read_fn(void* cookie, char* buf, uint64_t nbytes) {
-  auto* fs = static_cast<moodycamel::ConcurrentQueue<Frame>*>(cookie);
+  auto* fs = static_cast<FrameStream*>(cookie);
   Frame frame;
-  while (fs->try_dequeue(frame) == false) {
-    std::this_thread::yield();
+  while (fs->stream.try_dequeue(frame) == false) {
+    fs->update_flag.wait(false);
+    fs->update_flag.store(false);
   }
   uint64_t to_copy = std::min<uint64_t>(frame.size, nbytes);
   memcpy(buf, frame.data, to_copy);
@@ -45,11 +45,11 @@ static int64_t seek_fn(void* cookie, int64_t offset) {
 }
 
 static void close_fn(void* cookie) {
-  auto* fs = static_cast<moodycamel::ConcurrentQueue<Frame>*>(cookie);
+  auto* fs = static_cast<FrameStream*>(cookie);
 }
 
 static int open_fn(void* user_data, char* uri, mpv_stream_cb_info* info) {
-  auto fs = static_cast<moodycamel::ConcurrentQueue<Frame>*>(user_data);
+  auto fs = static_cast<FrameStream*>(user_data);
   info->cookie = fs;
   info->size_fn = size_fn;
   info->read_fn = read_fn;
@@ -119,7 +119,9 @@ Video::Video() {
 }
 
 void Video::push_frame(char* data, int size) {
-  frame_stream.enqueue(Frame { data, size });
+  frame_stream.stream.enqueue(Frame { data, size });
+  frame_stream.update_flag.store(true);
+  frame_stream.update_flag.notify_one();
   mpv_event* event = mpv_wait_event(mpv, 0);
   if (event->event_id == MPV_EVENT_LOG_MESSAGE) {
     mpv_event_log_message* msg = (mpv_event_log_message*)event->data;

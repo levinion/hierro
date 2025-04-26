@@ -27,7 +27,7 @@ void Application::prepare() {
 
 HierroResult<void> Application::run() {
   this->prepare();
-  std::chrono::high_resolution_clock clock;
+  std::chrono::steady_clock clock;
   while (!backend->should_close()) {
     auto start = clock.now();
     if (this->update())
@@ -35,7 +35,16 @@ HierroResult<void> Application::run() {
     auto end = clock.now();
     const std::chrono::duration<double> _delta { end - start };
     auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(_delta);
-    this->frame_rate = 1000.0 / delta.count();
+
+    auto frame_rate = 1000.0 / delta.count();
+
+    if (this->frame_limit && this->frame_limit.value() < frame_rate) {
+      this->frame_rate = this->frame_limit.value();
+      auto time_per_frame = 1000.0 / this->frame_limit.value();
+      sleep(time_per_frame - delta.count());
+    } else {
+      this->frame_rate = frame_rate;
+    }
   }
   this->destroy();
   return {};
