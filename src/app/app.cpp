@@ -41,7 +41,7 @@ HierroResult<void> Application::run() {
     if (this->frame_limit && this->frame_limit.value() < frame_rate) {
       this->frame_rate = this->frame_limit.value();
       auto time_per_frame = 1000.0 / this->frame_limit.value();
-      sleep(time_per_frame - delta.count());
+      usleep((time_per_frame - delta.count()) * 1000.0);
     } else {
       this->frame_rate = frame_rate;
     }
