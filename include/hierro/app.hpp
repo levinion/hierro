@@ -1,25 +1,57 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include "GLFW/glfw3.h"
+#include "hierro/backend/backend.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
 #include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
+#include "hierro/window.hpp"
 
 namespace hierro {
 
 class Application: public Component {
 public:
   // lifetime
-  HierroResult<void> init(int width, int height);
-  void run();
+  template<typename T>
+  HierroResult<void> init(WindowSettings settings) {
+    static_assert(
+      std::is_base_of<Backend, T>::value,
+      "T should impl hierro::Backend"
+    );
+    this->backend.reset(new T);
+
+    hierro_check(backend->init(settings));
+
+    glViewport(0, 0, this->size.width, this->size.height);
+
+    this->background = settings.background;
+    glClearColor(background.r, background.g, background.b, background.a);
+
+    if (settings.blend) {
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+    }
+
+    this->frame_limit = settings.frame_limit;
+
+    // init text generater
+    if (!this->fonts.empty()) {
+      // TODO: handle multiple fonts
+      hierro_check(this->tg->init(this->fonts[0], font_size));
+    }
+
+    return {};
+  }
+
+  HierroResult<void> run();
   void prepare();
   bool update();
-  void render();
+  HierroResult<void> render();
   void destroy();
 
   // custom hooks
@@ -36,70 +68,20 @@ public:
   static Application* get_instance();
 
   std::pair<int, int> gl_version = std::pair(3, 3);
-  std::string title;
-  Color background = Color(0.2, 0.3, 0.3);
-  bool blend = true;
 
   // custom method
   void set_focus(Component* component);
   Application* add_font(std::string font);
   void set_font_size(Size size);
-  void fullscreen();
-
-  // impl Component
-  // Component params
-  Size size = { 1.0f, 1.0f };
-  Position position = { 0.0f, 1.0f };
-  std::vector<Component*> children;
-  Component* father = nullptr;
-
-  // Component trait
-  virtual void draw() override;
-  virtual Position& get_position() override;
-  virtual Size& get_size() override;
-  virtual std::vector<Component*>& get_children() override;
-  virtual Component*& get_father() override;
-  virtual std::function<void(int, int, int)>& get_click_callback() override;
-  virtual std::function<void(int, int, int, int)>& get_key_callback() override;
-  virtual std::function<void(unsigned int)>& get_input_callback() override;
-  virtual std::function<void()>& get_focus_callback() override;
-
-  // override root position to break recurse
-  virtual Position absolute_position() override {
-    auto size = this->window_size();
-    return { 0, size.height };
-  }
-
-  // override root size to break recurse
-  virtual Size absolute_size() override {
-    return this->window_size();
-  }
-
-private:
-  GLFWwindow* window;
-  static Application* instance;
+  void fullscreen(bool flag);
+  void maximize();
+  void resize(Size size);
 
   TextGenerater* tg = TextGenerater::get_instance();
   std::vector<std::string> fonts;
   Size font_size = { 0.0, 48.0 };
 
-  // glfw hooks
-  static void
-  glfw_frame_buffer_size_callback(GLFWwindow* window, int width, int height);
-  static void glfw_key_callback(
-    GLFWwindow* window,
-    int key,
-    int scancode,
-    int action,
-    int mod
-  );
-  static void glfw_mouse_button_callabck(
-    GLFWwindow* window,
-    int button,
-    int action,
-    int mods
-  );
-  static void glfw_char_callback(GLFWwindow* window, unsigned int codepoint);
+  Color background = { 0.2, 0.2, 0.2 };
 
   // user hooks
   std::function<void(int, int)> resize_callback = [](int height, int width) {};
@@ -108,15 +90,47 @@ private:
   std::function<void()> destroy_callback = [] {};
 
   // common hooks
-  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
-  std::function<void(int, int, int, int)> key_callback =
-    [](int, int, int, int) {};
-  std::function<void(unsigned int)> input_callback = [](unsigned int) {};
-  std::function<void()> focus_callback = [] {};
+  COMPONENT_DEFAULT_CALLBACK
+
+  // impl Component
+  // Component params
+  Size size = { 1.0f, 1.0f };
+  Position position = { 0.0f, 1.0f };
+  std::vector<std::unique_ptr<Component>> children;
+  Component* father = nullptr;
+
+  // Component trait
+  COMPONENT_OVERRIDE_METHODS
+
+  // override root position to break recurse
+  inline virtual Position absolute_position() override {
+    auto size = this->window_size();
+    return { 0, size.height };
+  }
+
+  // override root size to break recurse
+  inline virtual Size absolute_size() override {
+    return this->window_size();
+  }
+
+  inline double get_frame_rate() {
+    return frame_rate;
+  }
+
+private:
+  friend SDLBackend;
+  friend GLFWBackend;
+
+  static std::unique_ptr<Application> instance;
 
   // call this to re-search focus
   void search_focus(float x, float y);
   Component* focused = this; // focused should never be nullptr
+
+  std::unique_ptr<Backend> backend;
+
+  double frame_rate;
+  std::optional<double> frame_limit;
 };
 
 } // namespace hierro

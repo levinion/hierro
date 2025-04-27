@@ -6,17 +6,21 @@
 
 using namespace hierro;
 
+// TODO: input event is not impl for now, so this widget doesn't work
 int main() {
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
 
-  Input input;
-  input.set_size(0.3, 0.1);
-  input.center();
+  WindowSettings settings;
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")
+    ->init<SDLBackend>(settings)
+    .value();
 
-  input.label.wrap = false;
-  input.label.overflow = false;
+  auto input = app->add_child<Input>();
+  input->set_size(0.3, 0.1);
+  input->center();
 
-  app->add_child(&input);
-  app->run();
+  input->label.wrap = false;
+  input->label.overflow = false;
+
+  app->run().value();
 }

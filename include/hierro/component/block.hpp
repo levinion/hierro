@@ -1,63 +1,62 @@
 #pragma once
 
+<<<<<<< HEAD
 #include <opencv2/opencv.hpp>
 #include <functional>
 #include <vector>
 #include "hierro/shader.hpp"
+  =======
+#include <memory>
+#include <vector>
+#include "hierro/shader/shader.hpp"
+  >>>>>>> kaleido
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
 
-namespace hierro {
+  namespace hierro {
 
-class Block: public Component {
-public:
-  unsigned int vbo;
-  unsigned int vao;
-  unsigned int ebo;
-  std::vector<float> vertices;
-  std::vector<unsigned int> indices;
-  Shader shader;
+  class Block: public Component {
+  public:
+    unsigned int vbo;
+    unsigned int vao;
+    unsigned int ebo;
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    Shader shader;
 
-  float radius = 1.0f;
-  Color color = Color(0.5, 0.5, 0.5);
-  float border_thickness = 1.0f;
-  Color border_color = Color(1.0, 0.0, 1.0);
+    float radius = 0.0f;
+    Color color = Color(0.5, 0.5, 0.5);
+    float border_thickness = 0.0f;
+    Color border_color = Color(1.0, 0.0, 1.0);
 
-  // texture
-  unsigned int texture;
-  void set_texture(cv::Mat& image);
+    void set_texture(char* pixels, int width, int height);
+    void free_texture();
 
-  Block();
-  ~Block() = default;
+    Block();
+    ~Block() = default;
 
-  // impl Component
-  Size size = { 0.25f, 0.25f };
-  Position position = { 0.5 - size.width / 2, 0.5 + size.height / 2 };
-  std::vector<Component*> children;
-  Component* father = nullptr;
+    // impl Component
+    Size size = { 0.25f, 0.25f };
+    Position position = { 0.5 - size.width / 2, 0.5 + size.height / 2 };
+    std::vector<std::unique_ptr<Component>> children;
+    Component* father = nullptr;
 
-  virtual void draw() override;
-  virtual Position& get_position() override;
-  virtual Size& get_size() override;
-  virtual std::vector<Component*>& get_children() override;
-  virtual Component*& get_father() override;
-  virtual std::function<void(int, int, int)>& get_click_callback() override;
-  virtual std::function<void(int, int, int, int)>& get_key_callback() override;
-  virtual std::function<void(unsigned int)>& get_input_callback() override;
-  virtual std::function<void()>& get_focus_callback() override;
+    COMPONENT_OVERRIDE_METHODS
 
-private:
-  void update_vertices();
-  void update_indices();
-  void init_shader();
+    // custom api
+    void load_custom_shader(const char* shader_source);
 
-  bool texture_enabled = false;
+  private:
+    void update_vertices();
+    void update_indices();
+    void init_shader();
 
-  std::function<void(int, int, int)> click_callback = [](int, int, int) {};
-  std::function<void(int, int, int, int)> key_callback =
-    [](int, int, int, int) {};
-  std::function<void(unsigned int)> input_callback = [](unsigned int) {};
-  std::function<void()> focus_callback = [] {};
-};
+    // texture
+    bool texture_enabled = false;
+    unsigned int texture;
+    unsigned int placehold_texture;
+
+    COMPONENT_DEFAULT_CALLBACK
+  };
 
 } // namespace hierro
