@@ -1,15 +1,16 @@
 #include "hierro/component/label.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
+#include "hierro/error.hpp"
 
 namespace hierro {
 
 Label::Label() {}
 
-void Label::draw() {
+HierroResult<void> Label::draw() {
   // assert tg is inited
   auto tg = TextGenerater::get_instance();
-  tg->draw_text(
+  return tg->draw_text(
     this->content,
     this->absolute_position(),
     this->absolute_size(),

@@ -2,9 +2,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <random>
-#include "GLFW/glfw3.h"
+#include "hierro/backend/sdl.hpp"
 #include "hierro/app.hpp"
 #include "hierro/component/block.hpp"
+#include "hierro/event/event.hpp"
+#include "hierro/event/keycode.hpp"
+#include "hierro/window.hpp"
 
 using namespace hierro;
 
@@ -16,35 +19,33 @@ int main() {
 #define rand random(gen)
 
   auto app = Application::get_instance();
+  WindowSettings settings;
   // this app did not need to render text
-  app->init(800, 600).unwrap();
-  Block block, block2;
-  block.color = Color(rand, 0, 1);
-  block.set_position(0.0, 1.0);
-  block.center();
-  block2.color = Color(0, 0, 1);
-  block2.set_size(0.5, 0.5);
-  block2.center();
+  app->init<SDLBackend>(settings).value();
+  auto block = app->add_child<Block>();
+  auto block2 = block->add_child<Block>();
+  block->color = Color(rand, 0, 1);
+  block->set_position(0.0, 1.0);
+  block->center();
+  block2->color = Color(0, 0, 1);
+  block2->set_size(0.5, 0.5);
+  block2->center();
 
-  block.on_click([&](int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-      block.color = Color(rand, rand, rand);
-    }
+  block->on_click([&](ClickEvent e) {
+    if (e.button == hierro::MouseButton::Left && e.press)
+      block->color = Color(rand, rand, rand);
   });
 
-  block2.on_click([&](int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-      block2.color = Color(rand, rand, rand);
-    }
+  block2->on_click([&](ClickEvent e) {
+    if (e.button == hierro::MouseButton::Left && e.press)
+      block2->color = Color(rand, rand, rand);
   });
 
-  app->on_click([&](int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+  app->on_click([&](ClickEvent e) {
+    if (e.button == hierro::MouseButton::Left && e.press) {
       app->background = Color(rand, rand, rand);
     }
   });
 
-  block.add_child(&block2);
-  app->add_child(&block);
-  app->run();
+  app->run().value();
 }

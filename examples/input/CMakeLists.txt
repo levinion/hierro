@@ -16,6 +16,7 @@ add_executable(${name} ${SRC})
 # link std library static
 target_link_options(${name} PRIVATE -static-libgcc -static-libstdc++)
 
+include_directories(/usr/include/freetype2)
 add_subdirectory(../.. hierro)
 target_link_libraries(${name} hierro)
 #

@@ -1,11 +1,12 @@
 #pragma once
 
+#include <expected>
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
-#include "freetype/freetype.h"
+#include "freetype2/freetype/freetype.h"
 #include "hierro/error.hpp"
-#include "hierro/shader.hpp"
+#include "hierro/shader/shader.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -24,8 +25,8 @@ enum class HorizontalAlign { Top, Bottom, Center };
 class TextGenerater {
 public:
   static TextGenerater* get_instance();
-  HierroResult<void> init(std::string font, Size size);
-  void draw_text(
+  std::expected<void, std::string> init(std::string font, Size size);
+  std::expected<void, std::string> draw_text(
     std::wstring text,
     Position position,
     Size size,

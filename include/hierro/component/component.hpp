@@ -2,25 +2,30 @@
 
 #include <cassert>
 #include <functional>
+#include <memory>
 #include <vector>
+#include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
+#include "hierro/event/event.hpp"
 
 namespace hierro {
 
 class Component {
 public:
   // render api
-  virtual void draw() = 0;
+  virtual HierroResult<void> draw() = 0;
   // layout api
   virtual Position& get_position() = 0;
   virtual Size& get_size() = 0;
-  virtual std::vector<Component*>& get_children() = 0;
+  virtual std::vector<std::unique_ptr<Component>>& get_children() = 0;
   virtual Component*& get_father() = 0;
   // hook api
-  virtual std::function<void(int, int, int)>& get_click_callback() = 0;
-  virtual std::function<void(int, int, int, int)>& get_key_callback() = 0;
+  virtual std::function<void(ClickEvent)>& get_click_callback() = 0;
+  virtual std::function<void(KeyEvent)>& get_key_callback() = 0;
   virtual std::function<void(unsigned int)>& get_input_callback() = 0;
   virtual std::function<void()>& get_focus_callback() = 0;
+  virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() = 0;
+  virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() = 0;
 
   virtual ~Component() = default;
 
@@ -62,51 +67,56 @@ public:
     size.height = height;
   }
 
-  virtual Component* add_child(Component* child) {
+  template<typename T>
+  T* add_child() {
+    static_assert(
+      std::is_base_of<Component, T>::value,
+      "T should impl hierro::Component"
+    );
+    auto child = std::make_unique<T>();
     auto& father = child->get_father();
     assert(father == nullptr);
     father = this;
     assert(father != nullptr);
     auto& children = this->get_children();
-    children.push_back(child);
+    auto cp = child.get();
+    children.push_back(std::move(child));
+    return cp;
+  }
+
+  virtual HierroResult<void> draw_children() {
+    auto& children = this->get_children();
+    for (auto& child : children) {
+      hierro_check(child->draw());
+      hierro_check(child->draw_children());
+    }
+    return {};
+  }
+
+  virtual Component* on_click(std::function<void(ClickEvent e)> callback) {
+    auto& click_callback = this->get_click_callback();
+    click_callback = callback;
     return this;
   }
 
-  virtual void draw_children() {
-    auto& children = this->get_children();
-    for (auto& child : children) {
-      child->draw();
-      child->draw_children();
-    }
+  virtual void send_click_event(ClickEvent e) {
+    this->get_click_callback()(e);
   }
 
-  // button, action, mods
-  virtual void on_click(std::function<void(int, int, int)> callback) {
-    auto& click_callback = this->get_click_callback();
-    click_callback = callback;
-  }
-
-  virtual void send_click_event(int button, int action, int mods) {
-    this->get_click_callback()(button, action, mods);
-  }
-
-  // @param int key
-  // @param int scancode
-  // @param int action
-  // @param int mod
-  virtual void on_key(std::function<void(int, int, int, int)> callback) {
+  virtual Component* on_key(std::function<void(KeyEvent e)> callback) {
     auto& key_callback = this->get_key_callback();
     key_callback = callback;
+    return this;
   }
 
-  virtual void send_key_event(int key, int scancode, int action, int mod) {
-    this->get_key_callback()(key, scancode, action, mod);
+  virtual void send_key_event(KeyEvent e) {
+    this->get_key_callback()(e);
   }
 
-  // param unsigned int codepoint
-  virtual void on_input(std::function<void(unsigned int)> callback) {
+  virtual Component* on_input(std::function<void(unsigned int)> callback) {
     auto& input_callback = this->get_input_callback();
     input_callback = callback;
+    return this;
   }
 
   virtual void send_input_event(unsigned int codepoint) {
@@ -114,13 +124,36 @@ public:
   }
 
   // do not set this hook with on_click at the same time
-  virtual void on_focus(std::function<void()> callback) {
+  virtual Component* on_focus(std::function<void()> callback) {
     auto& focus_callback = this->get_focus_callback();
     focus_callback = callback;
+    return this;
   }
 
   virtual void send_focus_event() {
     this->get_focus_callback()();
+  }
+
+  virtual Component*
+  on_mouse_move(std::function<void(MouseMoveEvent e)> callback) {
+    auto& mouse_move_callback = this->get_mouse_move_callback();
+    mouse_move_callback = callback;
+    return this;
+  }
+
+  virtual void send_mouse_move_event(MouseMoveEvent e) {
+    this->get_mouse_move_callback()(e);
+  }
+
+  virtual Component*
+  on_mouse_wheel(std::function<void(MouseWheelEvent e)> callback) {
+    auto& mouse_wheel_callback = this->get_mouse_wheel_callback();
+    mouse_wheel_callback = callback;
+    return this;
+  }
+
+  virtual void send_mouse_wheel_event(MouseWheelEvent e) {
+    this->get_mouse_wheel_callback()(e);
   }
 
   virtual bool is_hitted(float x, float y) {
@@ -146,11 +179,38 @@ public:
 #define IMPL_COMPONENT(T) \
   GET_REF(Position, T, position) \
   GET_REF(Size, T, size) \
-  GET_REF(std::vector<Component*>, T, children) \
+  GET_REF(std::vector<std::unique_ptr<Component>>, T, children) \
   GET_REF(Component*, T, father) \
-  GET_REF(std::function<void(int, int, int)>, T, click_callback) \
-  GET_REF(std::function<void(int, int, int, int)>, T, key_callback) \
+  GET_REF(std::function<void(ClickEvent)>, T, click_callback) \
+  GET_REF(std::function<void(KeyEvent)>, T, key_callback) \
+  GET_REF(std::function<void(MouseMoveEvent)>, T, mouse_move_callback) \
+  GET_REF(std::function<void(MouseWheelEvent)>, T, mouse_wheel_callback) \
   GET_REF(std::function<void(unsigned int)>, T, input_callback) \
   GET_REF(std::function<void()>, T, focus_callback)
+
+#define COMPONENT_DEFAULT_CALLBACK \
+  std::function<void(ClickEvent)> click_callback = [](ClickEvent) {}; \
+  std::function<void(KeyEvent)> key_callback = [](KeyEvent) {}; \
+  std::function<void(unsigned int)> input_callback = [](unsigned int) {}; \
+  std::function<void()> focus_callback = [] {}; \
+  std::function<void(MouseMoveEvent)> mouse_move_callback = \
+    [](MouseMoveEvent) {}; \
+  std::function<void(MouseWheelEvent)> mouse_wheel_callback = \
+    [](MouseWheelEvent) {};
+
+#define COMPONENT_OVERRIDE_METHODS \
+  virtual HierroResult<void> draw() override; \
+  virtual Position& get_position() override; \
+  virtual Size& get_size() override; \
+  virtual std::vector<std::unique_ptr<Component>>& get_children() override; \
+  virtual Component*& get_father() override; \
+  virtual std::function<void(ClickEvent)>& get_click_callback() override; \
+  virtual std::function<void(KeyEvent)>& get_key_callback() override; \
+  virtual std::function<void(unsigned int)>& get_input_callback() override; \
+  virtual std::function<void()>& get_focus_callback() override; \
+  virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() \
+    override; \
+  virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() \
+    override;
 
 } // namespace hierro
