@@ -3,23 +3,30 @@
 #include <string>
 #include "hierro/app.hpp"
 #include "hierro/component/label.hpp"
+#include "hierro/component/text.hpp"
+#include "hierro/window.hpp"
 
 using namespace hierro;
 
 int main() {
   auto app = Application::get_instance();
-  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")->init(800, 600).unwrap();
+  WindowSettings settings;
+  app->add_font("assets/fonts/LXGWWenKai-Regular.ttf")
+    ->init<SDLBackend>(settings)
+    .value();
 
-  Label label1, label2;
+  auto label1 = app->add_child<Label>();
+  auto label2 = app->add_child<Label>();
 
-  label1.color = Color(1, 0, 1);
-  label1.set_position(0.1, 0.1);
-  label1.content = L"Hello";
+  label1->color = Color(1, 0, 1);
+  label1->set_position(0.1, 0.1);
+  label1->horizontal_align = hierro::HorizontalAlign::Top;
+  label1->vertical_align = hierro::VerticalAlign::Left;
+  label1->content = L"Hello";
 
-  label2.set_position(0.1, 0.9);
-  label2.color = Color(1, 1, 0);
-  label2.content = L"你好";
+  label2->set_position(0.1, 0.9);
+  label2->color = Color(1, 1, 0);
+  label2->content = L"你好";
 
-  app->add_child(&label1)->add_child(&label2);
-  app->run();
+  app->run().value();
 }

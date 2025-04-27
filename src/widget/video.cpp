@@ -8,7 +8,6 @@
 #include <concurrentqueue.h>
 #include "hierro/app.hpp"
 #include <spdlog/spdlog.h>
-#include <thread>
 
 namespace hierro {
 

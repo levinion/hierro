@@ -37,6 +37,28 @@ Block::Block() {
     (void*)(2 * sizeof(float))
   );
   glEnableVertexAttribArray(1);
+
+  // generate placehold texture
+  unsigned char placehold_texture_pixels[4] = { 255, 255, 255, 255 };
+  GLuint placehold_texture;
+  glGenTextures(1, &placehold_texture);
+  glBindTexture(GL_TEXTURE_2D, placehold_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexImage2D(
+    GL_TEXTURE_2D,
+    0,
+    GL_RGBA,
+    1,
+    1,
+    0,
+    GL_RGBA,
+    GL_UNSIGNED_BYTE,
+    placehold_texture_pixels
+  );
+  this->placehold_texture = placehold_texture;
 }
 
 HierroResult<void> Block::draw() {
@@ -46,10 +68,9 @@ HierroResult<void> Block::draw() {
 
   if (this->texture_enabled) {
     glBindTexture(GL_TEXTURE_2D, texture);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, placehold_texture);
   }
-
-  glBindVertexArray(this->vao);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   // update uniforms
   glUniform1f(glGetUniformLocation(this->shader.id(), "radius"), this->radius);
@@ -89,6 +110,10 @@ HierroResult<void> Block::draw() {
     this->border_color.b,
     this->border_color.a
   );
+
+  glBindVertexArray(this->vao);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
   return {};
 }
 
@@ -189,11 +214,6 @@ void Block::set_texture(char* pixels, int width, int height) {
 
   this->texture_enabled = true;
   this->texture = texture;
-
-  glUniform1i(
-    glGetUniformLocation(this->shader.id(), "texture_enabled"),
-    this->texture_enabled
-  );
 }
 
 void Block::free_texture() {
@@ -203,15 +223,6 @@ void Block::free_texture() {
     this->texture_enabled = false;
   }
 }
-
-// void Block::load_custom_shader(const char* custom_shader) {
-//   auto frag = parse_libplacebo_shader(custom_shader);
-//   hierro::LOG(frag);
-//   auto vertex = (const char*)_block_vertex_shader_code;
-//   this->custom_shaders.push_back(
-//     Shader("libplacebo_custom_shader", vertex, frag)
-//   );
-// }
 
 IMPL_COMPONENT(Block)
 

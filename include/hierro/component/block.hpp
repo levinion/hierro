@@ -22,8 +22,6 @@ public:
   float border_thickness = 0.0f;
   Color border_color = Color(1.0, 0.0, 1.0);
 
-  // texture
-  unsigned int texture;
   void set_texture(char* pixels, int width, int height);
   void free_texture();
 
@@ -46,7 +44,10 @@ private:
   void update_indices();
   void init_shader();
 
+  // texture
   bool texture_enabled = false;
+  unsigned int texture;
+  unsigned int placehold_texture;
 
   COMPONENT_DEFAULT_CALLBACK
 };

@@ -24,22 +24,23 @@ Input::Input() {
   label->vertical_align = VerticalAlign::Left;
   label->content = L"";
 
+  // TODO: input event is not impl for now, so this widget doesn't work
   block->on_input([&](unsigned int codepoint) {
     label->content.push_back(codepoint);
     this->send_input_event(codepoint);
   });
 
   block->on_key([&](KeyEvent e) {
-    // if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-    //   if (key == GLFW_KEY_BACKSPACE) {
-    //     if (!label.content.empty()) {
-    //       label.content.pop_back();
-    //     }
-    //   }
-    // }
-    // if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
-    //   label.content.push_back('\n');
-    // }
+    if (e.press) {
+      if (e.key == hierro::Key::Backspace) {
+        if (!label->content.empty()) {
+          label->content.pop_back();
+        }
+      }
+    }
+    if (e.key == hierro::Key::Enter && e.press) {
+      label->content.push_back('\n');
+    }
     this->send_key_event(e);
   });
 }
