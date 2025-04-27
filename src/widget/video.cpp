@@ -155,6 +155,7 @@ void Video::terminate() {
   // notify to prevent dead lock
   frame_stream.update_flag.store(true);
   frame_stream.update_flag.notify_one();
+  mpv_render_context_free(mpv_gl);
   mpv_terminate_destroy(mpv);
 }
 
