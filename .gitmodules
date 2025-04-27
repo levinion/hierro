@@ -1,6 +1,3 @@
-[submodule "vendor/result-cpp"]
-	path = vendor/result-cpp
-	url = http://github.com/levinion/result-cpp.git
 [submodule "vendor/magic_enum"]
 	path = vendor/magic_enum
 	url = https://github.com/Neargye/magic_enum

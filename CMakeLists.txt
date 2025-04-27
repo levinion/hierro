@@ -50,5 +50,4 @@ pkg_check_modules(spdlog REQUIRED spdlog)
 target_link_libraries(${name} PRIVATE ${spdlog_LIBRARIES})
 
 target_include_directories(${name} PUBLIC ./vendor/glm/)
-target_include_directories(${name} PUBLIC ./vendor/result/)
 target_include_directories(${name} PUBLIC ./vendor/concurrentqueue)
