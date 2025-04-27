@@ -47,8 +47,8 @@ HierroResult<void> Application::run() {
 }
 
 bool Application::update() {
-  auto a = backend->update();
   auto b = this->update_callback();
+  auto a = backend->update();
   return a || b;
 }
 
@@ -68,16 +68,10 @@ void Application::destroy() {
 }
 
 Size Application::window_size() {
-  assert(
-    backend.get() && "backend should be initialized before calling window_size"
-  );
   return backend->window_size();
 }
 
 Position Application::cursor_pos() {
-  assert(
-    backend.get() && "backend should be initialized before calling window_size"
-  );
   return backend->cursor_pos();
 }
 
@@ -88,7 +82,8 @@ HierroResult<void> Application::draw() {
 IMPL_COMPONENT(Application);
 
 void Application::search_focus(float x, float y) {
-  std::function<void(std::unique_ptr<Component>&, float, float, Component*&)>
+  static std::function<
+    void(std::unique_ptr<Component>&, float, float, Component*&)>
     range_tree = [&](
                    std::unique_ptr<Component>& node,
                    float x,

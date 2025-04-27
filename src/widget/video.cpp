@@ -46,9 +46,7 @@ static int64_t seek_fn(void* cookie, int64_t offset) {
   return MPV_ERROR_UNSUPPORTED;
 }
 
-static void close_fn(void* cookie) {
-  auto* fs = static_cast<FrameStream*>(cookie);
-}
+static void close_fn(void* cookie) {}
 
 static int open_fn(void* user_data, char* uri, mpv_stream_cb_info* info) {
   auto fs = static_cast<FrameStream*>(user_data);
@@ -157,7 +155,7 @@ void Video::terminate() {
   // notify to prevent dead lock
   frame_stream.update_flag.store(true);
   frame_stream.update_flag.notify_one();
-  mpv_destroy(mpv);
+  mpv_terminate_destroy(mpv);
 }
 
 } // namespace hierro
