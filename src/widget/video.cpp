@@ -154,6 +154,9 @@ void Video::send_command(std::vector<std::string> cmd) {
 
 void Video::terminate() {
   this->frame_stream.should_close = true;
+  // notify to prevent dead lock
+  frame_stream.update_flag.store(true);
+  frame_stream.update_flag.notify_one();
   mpv_destroy(mpv);
 }
 
