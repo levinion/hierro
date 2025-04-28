@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
-#include "hierro/error.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/event/event.hpp"
 

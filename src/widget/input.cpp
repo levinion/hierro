@@ -1,6 +1,6 @@
 #include "hierro/widget/input.hpp"
 #include "hierro/component/text.hpp"
-#include "hierro/error.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
 
 namespace hierro {

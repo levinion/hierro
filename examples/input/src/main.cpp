@@ -1,8 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include "hierro/app.hpp"
-#include "hierro/widget/input.hpp"
+#include "hierro/hierro.hpp"
 
 using namespace hierro;
 

@@ -1,8 +1,8 @@
 #include <glad/glad.h>
 #include "hierro/component/block.hpp"
-#include "hierro/app.hpp"
+#include "hierro/app/app.hpp"
 #include "hierro/component/component.hpp"
-#include "hierro/error.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
 #include "hierro/shader/shader.hpp"

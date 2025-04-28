@@ -1,5 +1,5 @@
 #include "hierro/widget/button.hpp"
-#include "hierro/error.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
 
 namespace hierro {

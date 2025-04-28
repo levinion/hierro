@@ -8,9 +8,9 @@
 #include "hierro/backend/backend.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
-#include "hierro/error.hpp"
 #include "hierro/utils/data.hpp"
-#include "hierro/window.hpp"
+#include "hierro/app/window.hpp"
+#include "hierro/utils/error.hpp"
 
 namespace hierro {
 

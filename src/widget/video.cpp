@@ -6,7 +6,7 @@
 #include <mpv/render_gl.h>
 #include <mpv/stream_cb.h>
 #include <concurrentqueue.h>
-#include "hierro/app.hpp"
+#include "hierro/app/app.hpp"
 #include <spdlog/spdlog.h>
 
 namespace hierro {

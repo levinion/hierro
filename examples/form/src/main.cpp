@@ -1,19 +1,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include "hierro/app.hpp"
-#include "hierro/component/label.hpp"
-#include "hierro/component/text.hpp"
-<<<<<<< HEAD
-#include "hierro/utils/log.hpp"
-  =======
-#include "hierro/event/event.hpp"
-#include "hierro/event/keycode.hpp"
-  >>>>>>> kaleido
-#include "hierro/widget/input.hpp"
-#include "hierro/widget/button.hpp"
+#include "hierro/hierro.hpp"
 
-  using namespace hierro;
+using namespace hierro;
 
 int main() {
   auto app = Application::get_instance();

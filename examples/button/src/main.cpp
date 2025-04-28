@@ -2,12 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <random>
-#include "hierro/app.hpp"
-#include "hierro/event/event.hpp"
-#include "hierro/event/keycode.hpp"
-#include "hierro/widget/button.hpp"
-#include "hierro/window.hpp"
-#include "hierro/backend/sdl.hpp"
+#include "hierro/hierro.hpp"
 
 using namespace hierro;
 

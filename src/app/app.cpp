@@ -1,8 +1,8 @@
 #include <glad/glad.h>
-#include "hierro/app.hpp"
+#include "hierro/app/app.hpp"
 #include <strings.h>
 #include <functional>
-#include <hierro/error.hpp>
+#include <hierro/utils/error.hpp>
 #include <memory>
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"

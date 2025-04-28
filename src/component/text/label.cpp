@@ -1,7 +1,7 @@
 #include "hierro/component/label.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/component/text.hpp"
-#include "hierro/error.hpp"
+#include "hierro/utils/error.hpp"
 
 namespace hierro {
 

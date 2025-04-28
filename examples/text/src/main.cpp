@@ -1,10 +1,7 @@
 #include <cmath>
 #include <ctime>
 #include <string>
-#include "hierro/app.hpp"
-#include "hierro/component/label.hpp"
-#include "hierro/component/text.hpp"
-#include "hierro/window.hpp"
+#include "hierro/hierro.hpp"
 
 using namespace hierro;
 

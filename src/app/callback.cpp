@@ -1,6 +1,6 @@
 #include <cassert>
 #include <functional>
-#include "hierro/app.hpp"
+#include "hierro/app/app.hpp"
 
 namespace hierro {
 

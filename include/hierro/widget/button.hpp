@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include "hierro/component/block.hpp"
 #include "hierro/component/component.hpp"

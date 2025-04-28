@@ -4,8 +4,8 @@
 #include <glm/glm.hpp>
 #include <freetype2/freetype/freetype.h>
 #include <freetype2/ft2build.h>
-#include "hierro/app.hpp"
-#include "hierro/error.hpp"
+#include "hierro/app/app.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/shader/text/vertex.hpp"
 #include "hierro/shader/text/fragment.hpp"
 #include "hierro/utils/data.hpp"
