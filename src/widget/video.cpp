@@ -1,3 +1,4 @@
+#include "hierro/app/app.hpp"
 #include "hierro/widget/video.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
@@ -6,7 +7,6 @@
 #include <mpv/render_gl.h>
 #include <mpv/stream_cb.h>
 #include <concurrentqueue.h>
-#include "hierro/app/app.hpp"
 #include <spdlog/spdlog.h>
 
 namespace hierro {
@@ -99,6 +99,7 @@ Video::Video() {
 
   mpfbo.w = window_size.width;
   mpfbo.h = window_size.height;
+  mpfbo.fbo = this->fbo;
 
   std::vector<mpv_render_param> params = {
     { MPV_RENDER_PARAM_API_TYPE, (void*)MPV_RENDER_API_TYPE_OPENGL },

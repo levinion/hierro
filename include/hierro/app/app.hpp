@@ -5,9 +5,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "hierro/component/text.hpp"
 #include "hierro/backend/backend.hpp"
 #include "hierro/component/component.hpp"
-#include "hierro/component/text.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/app/window.hpp"
 #include "hierro/utils/error.hpp"

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GL/gl.h>
 #include <mpv/client.h>
 #include <mpv/render.h>
 #include "hierro/component/component.hpp"
@@ -47,6 +48,8 @@ private:
 
   mpv_opengl_fbo mpfbo = { .fbo = 0, .w = 0, .h = 0 };
   int flip_y = 1;
+
+  GLuint fbo;
 
   COMPONENT_DEFAULT_CALLBACK
 };

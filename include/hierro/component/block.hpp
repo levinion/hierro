@@ -2,9 +2,10 @@
 
 #include <memory>
 #include <vector>
-#include "hierro/shader/shader.hpp"
+#include "hierro/utils/shader.hpp"
 #include "hierro/component/component.hpp"
 #include "hierro/utils/data.hpp"
+#include "hierro/utils/texture.hpp"
 
 namespace hierro {
 
@@ -26,6 +27,7 @@ public:
   void free_texture();
 
   Block();
+
   ~Block() = default;
 
   // impl Component
@@ -46,8 +48,8 @@ private:
 
   // texture
   bool texture_enabled = false;
-  unsigned int texture;
-  unsigned int placehold_texture;
+  Texture texture;
+  Texture placehold_texture;
 
   COMPONENT_DEFAULT_CALLBACK
 };

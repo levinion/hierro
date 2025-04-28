@@ -1,5 +1,6 @@
 #include <glad/glad.h>
-#include "hierro/shader/shader.hpp"
+#include <GL/gl.h>
+#include "hierro/utils/shader.hpp"
 #include <GL/glext.h>
 #include <cstddef>
 #include <string>
@@ -8,7 +9,7 @@
 namespace hierro {
 
 Shader::Shader(std::string name, const char* vertex, const char* fragment) {
-  unsigned int vertex_shader;
+  GLuint vertex_shader;
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &vertex, NULL);
   glCompileShader(vertex_shader);
@@ -21,7 +22,7 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
     }
   }
 
-  unsigned int fragment_shader;
+  GLuint fragment_shader;
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &fragment, NULL);
   glCompileShader(fragment_shader);
@@ -34,7 +35,7 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
     }
   }
 
-  unsigned int shader_program;
+  GLuint shader_program;
   shader_program = glCreateProgram();
 
   glAttachShader(shader_program, vertex_shader);
@@ -55,15 +56,5 @@ Shader::Shader(std::string name, const char* vertex, const char* fragment) {
 
   this->program = shader_program;
 }
-
-void Shader::use() {
-  glUseProgram(this->program);
-}
-
-unsigned int Shader::id() {
-  return this->program;
-}
-
-Shader::Shader() {}
 
 } // namespace hierro

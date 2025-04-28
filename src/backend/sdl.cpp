@@ -5,10 +5,10 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_video.h>
-#include "hierro/app.hpp"
-#include "hierro/error.hpp"
+#include "hierro/app/app.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
-#include "hierro/window.hpp"
+#include "hierro/app/window.hpp"
 
 namespace hierro {
 HierroResult<void> SDLBackend::init(WindowSettings settings) {

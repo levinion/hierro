@@ -5,7 +5,8 @@
 #include "hierro/utils/error.hpp"
 #include "hierro/shader/block/vertex.hpp"
 #include "hierro/shader/block/fragment.hpp"
-#include "hierro/shader/shader.hpp"
+#include "hierro/utils/shader.hpp"
+#include "hierro/utils/texture.hpp"
 
 namespace hierro {
 
@@ -40,24 +41,7 @@ Block::Block() {
 
   // generate placehold texture
   unsigned char placehold_texture_pixels[4] = { 255, 255, 255, 255 };
-  GLuint placehold_texture;
-  glGenTextures(1, &placehold_texture);
-  glBindTexture(GL_TEXTURE_2D, placehold_texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexImage2D(
-    GL_TEXTURE_2D,
-    0,
-    GL_RGBA,
-    1,
-    1,
-    0,
-    GL_RGBA,
-    GL_UNSIGNED_BYTE,
-    placehold_texture_pixels
-  );
+  auto placehold_texture = Texture((const char*)placehold_texture_pixels, 1, 1);
   this->placehold_texture = placehold_texture;
 }
 
@@ -67,9 +51,9 @@ HierroResult<void> Block::draw() {
   this->shader.use();
 
   if (this->texture_enabled) {
-    glBindTexture(GL_TEXTURE_2D, texture);
+    texture.bind();
   } else {
-    glBindTexture(GL_TEXTURE_2D, placehold_texture);
+    placehold_texture.bind();
   }
 
   // update uniforms
@@ -187,30 +171,7 @@ void Block::init_shader() {
 void Block::set_texture(char* pixels, int width, int height) {
   if (this->texture_enabled)
     return;
-  // cv::flip(image, image, 0);
-  unsigned int texture;
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  // glPixelStorei(GL_UNPACK_ROW_LENGTH, image.step / image.elemSize());
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glTexImage2D(
-    GL_TEXTURE_2D,
-    0,
-    GL_RGB,
-    width,
-    height,
-    0,
-    GL_BGRA,
-    GL_UNSIGNED_BYTE,
-    pixels
-  );
-  glGenerateMipmap(GL_TEXTURE_2D);
+  auto texture = Texture(pixels, width, height);
 
   this->texture_enabled = true;
   this->texture = texture;
@@ -218,8 +179,7 @@ void Block::set_texture(char* pixels, int width, int height) {
 
 void Block::free_texture() {
   if (this->texture_enabled) {
-    glDeleteTextures(1, &this->texture);
-    this->texture = 0;
+    this->texture.free();
     this->texture_enabled = false;
   }
 }
