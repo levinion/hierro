@@ -19,16 +19,20 @@ public:
   Shader shader;
 
   float radius = 0.0f;
-  Color color = Color(0.5, 0.5, 0.5);
+  Color color = Color(1, 1, 1);
   float border_thickness = 0.0f;
   Color border_color = Color(1.0, 0.0, 1.0);
 
-  void set_texture(char* pixels, int width, int height);
+  void set_texture(unsigned char* pixels, int width, int height);
+  void set_texture(Texture texture);
   void free_texture();
 
   Block();
-
   ~Block() = default;
+
+  inline void flip_y() {
+    _flip_y ? _flip_y = false : _flip_y = true;
+  }
 
   // impl Component
   Size size = { 0.25f, 0.25f };
@@ -50,6 +54,8 @@ private:
   bool texture_enabled = false;
   Texture texture;
   Texture placehold_texture;
+
+  bool _flip_y = false;
 
   COMPONENT_DEFAULT_CALLBACK
 };

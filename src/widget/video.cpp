@@ -1,4 +1,6 @@
 #include "hierro/app/app.hpp"
+#include "hierro/event/event.hpp"
+#include "hierro/utils/texture.hpp"
 #include "hierro/widget/video.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
@@ -62,7 +64,30 @@ static void* get_proc_address_mpv(void* fn_ctx, const char* name) {
   return (void*)SDL_GL_GetProcAddress(name);
 }
 
-Video::Video() {
+Video::Video() {}
+
+void Video::init(VideoSettings settings) {
+  this->frame_size = settings.frame_size;
+
+  // init block;
+  this->block = this->add_child<Block>();
+  block->set_size(1.0, 1.0);
+  block->center();
+  if (settings.flip_y)
+    block->flip_y();
+
+  // bind events
+  block->on_input([&](unsigned int codepoint) {
+    this->send_input_event(codepoint);
+  });
+  block->on_key([&](KeyEvent e) { this->send_key_event(e); });
+  block->on_click([&](ClickEvent e) { this->send_click_event(e); });
+  block->on_mouse_move([&](MouseMoveEvent e) { this->send_mouse_move_event(e); }
+  );
+  block->on_mouse_wheel([&](MouseWheelEvent e) {
+    this->send_mouse_wheel_event(e);
+  });
+
   auto app = Application::get_instance();
   auto window_size = app->window_size();
 
@@ -73,17 +98,20 @@ Video::Video() {
   mpv_set_option_string(
     mpv,
     "demuxer-rawvideo-w",
-    std::to_string((int)window_size.width).c_str()
+    std::to_string((int)frame_size.width).c_str()
   );
   mpv_set_option_string(
     mpv,
     "demuxer-rawvideo-h",
-    std::to_string((int)window_size.height).c_str()
+    std::to_string((int)frame_size.height).c_str()
   );
-  mpv_set_option_string(mpv, "demuxer-rawvideo-mp-format", "bgra");
+  mpv_set_option_string(
+    mpv,
+    "demuxer-rawvideo-mp-format",
+    settings.format.c_str()
+  );
   mpv_set_option_string(mpv, "demuxer-rawvideo-fps", "60");
   mpv_set_option_string(mpv, "demuxer-readahead-secs", "0");
-  // mpv_set_option_string(mpv, "demuxer-rawvideo-size", "33177600");
   if (mpv_initialize(mpv) < 0) {
     spdlog::error("mpv initialize failed");
   }
@@ -97,36 +125,59 @@ Video::Video() {
   };
   // int advanced_control = 1;
 
-  mpfbo.w = window_size.width;
-  mpfbo.h = window_size.height;
+  // create fbo
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  auto texture =
+    Texture(NULL, frame_size.width, frame_size.height, settings.gl_format);
+  glFramebufferTexture2D(
+    GL_FRAMEBUFFER,
+    GL_COLOR_ATTACHMENT0,
+    GL_TEXTURE_2D,
+    texture.id(),
+    0
+  );
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    spdlog::error("fbo failed created");
+  }
+  // reset fbo to 0
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  mpfbo.w = frame_size.width;
+  mpfbo.h = frame_size.height;
   mpfbo.fbo = this->fbo;
+  this->texture = texture;
+
+  block->set_texture(this->texture);
 
   std::vector<mpv_render_param> params = {
     { MPV_RENDER_PARAM_API_TYPE, (void*)MPV_RENDER_API_TYPE_OPENGL },
     { MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &op },
     // { MPV_RENDER_PARAM_ADVANCED_CONTROL, &advanced_control },
     { MPV_RENDER_PARAM_OPENGL_FBO, &mpfbo },
-    { MPV_RENDER_PARAM_FLIP_Y, &flip_y },
     { MPV_RENDER_PARAM_INVALID, NULL },
   };
 
   check_error(mpv_render_context_create(&mpv_gl, mpv, params.data()));
 
+  this->params = params;
+
   // Play this file.
   const char* cmd[] = { "loadfile", "kaleido://fake", NULL };
   check_error(mpv_command(mpv, cmd));
-
-  this->params = params;
 }
 
-void Video::push_frame(char* data, int size) {
+void Video::update(unsigned char* data, int size) {
   frame_stream.stream.enqueue(Frame { data, size });
   frame_stream.update_flag.store(true);
   frame_stream.update_flag.notify_one();
+
+  // handle event
   mpv_event* event = mpv_wait_event(mpv, 0);
   if (event->event_id == MPV_EVENT_LOG_MESSAGE) {
     mpv_event_log_message* msg = (mpv_event_log_message*)event->data;
-    spdlog::error("[{}] {}: {}", msg->prefix, msg->level, msg->text);
+    spdlog::warn("[{}] {}: {}", msg->prefix, msg->level, msg->text);
   }
 }
 
@@ -135,9 +186,12 @@ void Video::render() {
   if (flag & MPV_RENDER_UPDATE_FRAME) {
     auto app = Application::get_instance();
     auto window_size = app->window_size();
-    mpfbo.w = window_size.width;
-    mpfbo.h = window_size.height;
+    mpfbo.w = frame_size.width;
+    mpfbo.h = frame_size.height;
+    glViewport(0, 0, frame_size.width, frame_size.height);
     check_error(mpv_render_context_render(mpv_gl, params.data()));
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, window_size.width, window_size.height);
   }
 }
 
@@ -160,4 +214,12 @@ void Video::terminate() {
   mpv_terminate_destroy(mpv);
 }
 
+bool Video::is_hitted(float x, float y) {
+  return false;
+}
+
+Video::~Video() {
+  this->texture.free();
+  glDeleteFramebuffers(1, &fbo);
+}
 } // namespace hierro

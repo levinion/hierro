@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hierro/component/block.hpp"
+#include "hierro/utils/texture.hpp"
 #include <GL/gl.h>
 #include <mpv/client.h>
 #include <mpv/render.h>
@@ -12,7 +14,7 @@ namespace hierro {
 
 class Frame {
 public:
-  char* data;
+  unsigned char* data;
   int size;
 };
 
@@ -23,15 +25,27 @@ public:
   std::atomic<bool> should_close;
 };
 
+class VideoSettings {
+public:
+  Size frame_size;
+  std::string format;
+  GLenum gl_format;
+  bool flip_y = false;
+};
+
 class Video: public Component {
 public:
   // impl Component
   COMPONENT_OVERRIDE_METHODS
   Video();
-  void push_frame(char* data, int size);
+  ~Video();
+  void init(VideoSettings);
+  void update(unsigned char* data, int size);
   void render();
   void send_command(std::vector<std::string> cmd);
   void terminate();
+
+  virtual bool is_hitted(float x, float y) override;
 
 private:
   // impl Component
@@ -47,9 +61,11 @@ private:
   FrameStream frame_stream;
 
   mpv_opengl_fbo mpfbo = { .fbo = 0, .w = 0, .h = 0 };
-  int flip_y = 1;
 
-  GLuint fbo;
+  GLuint fbo = 0;
+  Texture texture;
+  Block* block;
+  Size frame_size = { 0, 0 };
 
   COMPONENT_DEFAULT_CALLBACK
 };

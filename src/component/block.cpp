@@ -41,7 +41,7 @@ Block::Block() {
 
   // generate placehold texture
   unsigned char placehold_texture_pixels[4] = { 255, 255, 255, 255 };
-  auto placehold_texture = Texture((const char*)placehold_texture_pixels, 1, 1);
+  auto placehold_texture = Texture(placehold_texture_pixels, 1, 1);
   this->placehold_texture = placehold_texture;
 }
 
@@ -113,26 +113,27 @@ void Block::update_vertices() {
   float width = absolute_size.width / window_size.width * 2;
   float height = absolute_size.height / window_size.height * 2;
 
-  this->vertices = { // left down
-                     x,
-                     y - height,
-                     0.0,
-                     1.0,
-                     // right down
-                     x + width,
-                     y - height,
-                     1.0,
-                     1.0,
-                     // left up
-                     x,
-                     y,
-                     0.0,
-                     0.0,
-                     // right up
-                     x + width,
-                     y,
-                     1.0,
-                     0.0
+  this->vertices = {
+    // left down
+    x,
+    y - height,
+    0.0,
+    this->_flip_y ? 1.0f : 0.0f,
+    // right down
+    x + width,
+    y - height,
+    1.0,
+    this->_flip_y ? 1.0f : 0.0f,
+    // left up
+    x,
+    y,
+    0.0,
+    this->_flip_y ? 0.0f : 1.0f,
+    // right up
+    x + width,
+    y,
+    1.0,
+    this->_flip_y ? 0.0f : 1.0f,
   };
 
   glBindVertexArray(this->vao);
@@ -168,11 +169,18 @@ void Block::init_shader() {
     Shader("block_shader", vertex_shader_code, fragment_shader_code);
 }
 
-void Block::set_texture(char* pixels, int width, int height) {
+void Block::set_texture(unsigned char* pixels, int width, int height) {
   if (this->texture_enabled)
     return;
   auto texture = Texture(pixels, width, height);
 
+  this->texture_enabled = true;
+  this->texture = texture;
+}
+
+void Block::set_texture(Texture texture) {
+  if (this->texture_enabled)
+    return;
   this->texture_enabled = true;
   this->texture = texture;
 }

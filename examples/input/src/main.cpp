@@ -18,8 +18,8 @@ int main() {
   input->set_size(0.3, 0.1);
   input->center();
 
-  input->label.wrap = false;
-  input->label.overflow = false;
+  input->label->wrap = false;
+  input->label->overflow = false;
 
   app->run().value();
 }

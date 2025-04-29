@@ -15,8 +15,8 @@ public:
   virtual bool is_hitted(float x, float y) override;
   Input();
 
-  Block block;
-  Label label;
+  Block* block;
+  Label* label;
 
 private:
   // impl Component

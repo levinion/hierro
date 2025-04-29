@@ -12,8 +12,8 @@ HierroResult<void> Input::draw() {
 IMPL_COMPONENT(Input)
 
 Input::Input() {
-  auto label = this->block.add_child<Label>();
-  auto block = this->add_child<Block>();
+  label = this->block->add_child<Label>();
+  block = this->add_child<Block>();
 
   block->set_size(1.0, 1.0);
   block->center();

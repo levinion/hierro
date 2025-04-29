@@ -26,6 +26,9 @@ target_link_libraries(${name} PUBLIC OpenGL::GL)
 add_subdirectory(./vendor/glad)
 target_link_libraries(${name} PUBLIC glad)
 
+add_subdirectory(./vendor/stb_image)
+target_link_libraries(${name} PUBLIC stb_image)
+
 add_subdirectory(./vendor/magic_enum)
 target_link_libraries(${name} PUBLIC magic_enum)
 
@@ -49,5 +52,5 @@ target_link_libraries(${name} PUBLIC ${GLFW3_LIBRARIES})
 pkg_check_modules(spdlog REQUIRED spdlog)
 target_link_libraries(${name} PRIVATE ${spdlog_LIBRARIES})
 
-target_include_directories(${name} PUBLIC ./vendor/glm/)
+target_include_directories(${name} PUBLIC ./vendor/glm)
 target_include_directories(${name} PUBLIC ./vendor/concurrentqueue)

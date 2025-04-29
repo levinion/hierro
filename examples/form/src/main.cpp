@@ -23,8 +23,8 @@ int main() {
   auto input = container->add_child<Input>();
   input->set_size(0.5, 0.2);
   input->center();
-  input->label.wrap = false;
-  input->label.overflow = false;
+  input->label->wrap = false;
+  input->label->overflow = false;
 
   auto button = app->add_child<Button>();
   button->label->content = L"submit";
@@ -32,7 +32,7 @@ int main() {
   button->set_size(0.1, 0.1);
   button->on_click([&](ClickEvent e) {
     if (e.button == hierro::MouseButton::Left && e.press) {
-      label->content += input->label.content;
+      label->content += input->label->content;
     }
   });
 
