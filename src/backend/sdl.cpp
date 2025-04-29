@@ -9,6 +9,7 @@
 #include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
 #include "hierro/app/window.hpp"
+#include <codecvt>
 
 namespace hierro {
 HierroResult<void> SDLBackend::init(WindowSettings settings) {
@@ -136,19 +137,18 @@ bool SDLBackend::update() {
         KeyEvent e;
         e.key = static_cast<Key>(event.key.scancode);
         // handle keystate
-        if (this->keystate.contains(e.key)) {
-          this->keystate.erase(e.key);
+        if (app->keystate.contains(e.key)) {
+          app->keystate.erase(e.key);
         } else {
-          this->keystate.set(e.key);
+          app->keystate.set(e.key);
         }
         e.press = event.key.down;
-        e.keystate = &this->keystate;
+        e.keystate = &app->keystate;
         app->focused->send_key_event(e);
         break;
       }
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
       case SDL_EVENT_MOUSE_BUTTON_UP: {
-        auto app = Application::get_instance();
         auto cursor_pos = app->cursor_pos();
         if (event.button.button == SDL_BUTTON_LEFT && event.button.down) {
           app->search_focus(cursor_pos.x, cursor_pos.y);
@@ -163,6 +163,10 @@ bool SDLBackend::update() {
       case SDL_EVENT_TEXT_INPUT: {
         // TODO: char* to keycode
         // app->focused->input_callback(event.text.text);
+        InputEvent e;
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        e.input = conv.from_bytes(event.text.text);
+        app->focused->send_input_event(e);
         break;
       }
       case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
@@ -223,6 +227,12 @@ Size SDLBackend::window_size() {
   SDL_GetWindowSize(window, &width, &height);
   return { (double)width, (double)height };
 };
+
+Position SDLBackend::window_position() {
+  int x, y;
+  SDL_GetWindowPosition(window, &x, &y);
+  return { (double)x, (double)y };
+}
 
 Position SDLBackend::cursor_pos() {
   float xpos, ypos;

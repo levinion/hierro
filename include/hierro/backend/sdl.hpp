@@ -2,7 +2,6 @@
 
 #include <SDL3/SDL_video.h>
 #include "hierro/backend/backend.hpp"
-#include "hierro/event/keystate.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -20,6 +19,7 @@ public:
   virtual void minimize() override;
   virtual void fullscreen(bool flag) override;
   virtual Size window_size() override;
+  virtual Position window_position() override;
   virtual Position cursor_pos() override;
 
 private:
@@ -28,6 +28,5 @@ private:
   Size size = { 1.0f, 1.0f };
   Position position = { 0.0f, 1.0f };
   bool sdl_should_close = false;
-  KeyState keystate;
 };
 } // namespace hierro

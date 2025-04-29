@@ -5,6 +5,7 @@
 #include <hierro/utils/error.hpp>
 #include <memory>
 #include "hierro/component/component.hpp"
+#include "hierro/event/event.hpp"
 #include "hierro/utils/data.hpp"
 #include "hierro/backend/backend.hpp"
 #include <spdlog/spdlog.h>
@@ -71,6 +72,10 @@ Size Application::window_size() {
   return backend->window_size();
 }
 
+Position Application::window_position() {
+  return backend->window_position();
+}
+
 Position Application::cursor_pos() {
   return backend->cursor_pos();
 }
@@ -105,8 +110,8 @@ void Application::search_focus(float x, float y) {
     range_tree(child, x, y, focused);
   }
   this->focused = focused;
-
-  focused->send_focus_event();
+  FocusEvent e;
+  focused->send_focus_event(e);
 }
 
 void Application::set_focus(Component* component) {
@@ -122,7 +127,6 @@ void Application::maximize() {
   backend->maximize();
 }
 
-// TODO: FINISH THIS
 void Application::fullscreen(bool flag) {
   backend->fullscreen(flag);
 }

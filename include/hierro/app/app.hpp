@@ -62,6 +62,7 @@ public:
 
   // functional method
   Size window_size();
+  Position window_position();
   Position cursor_pos();
 
   // require the global instance and use anywhere
@@ -131,6 +132,8 @@ private:
 
   double frame_rate;
   std::optional<double> frame_limit;
+
+  KeyState keystate;
 };
 
 } // namespace hierro

@@ -24,6 +24,7 @@ public:
   virtual void maximize() = 0;
   virtual void fullscreen(bool flag) = 0;
   virtual Size window_size() = 0;
+  virtual Position window_position() = 0;
   virtual Position cursor_pos() = 0;
 
   GLFWBackend* as_glfw() {

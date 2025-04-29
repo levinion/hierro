@@ -35,7 +35,7 @@ HierroResult<void> GLFWBackend::init(WindowSettings settings) {
     settings.size.width,
     settings.size.height,
     settings.title.c_str(),
-    NULL,
+    settings.fullscreen ? glfwGetPrimaryMonitor() : NULL,
     NULL
   );
   glfwMakeContextCurrent(window);
@@ -94,13 +94,39 @@ void GLFWBackend::minimize() {
   glfwIconifyWindow(window);
 }
 
-void GLFWBackend::fullscreen(bool flag) {}
+void GLFWBackend::fullscreen(bool flag) {
+  if (flag) {
+    // store window_size to recover after
+    this->windowed_mode_size = window_size();
+    this->windowed_mode_position = window_position();
+    int width, height;
+    auto monitor = glfwGetPrimaryMonitor();
+    glfwGetMonitorPhysicalSize(monitor, &width, &height);
+    glfwSetWindowMonitor(window, monitor, 0, 0, width, height, GLFW_DONT_CARE);
+  } else {
+    glfwSetWindowMonitor(
+      window,
+      NULL,
+      windowed_mode_position.x,
+      windowed_mode_position.y,
+      windowed_mode_size.width,
+      windowed_mode_size.height,
+      GLFW_DONT_CARE
+    );
+  }
+}
 
 Size GLFWBackend::window_size() {
   int width, height;
   glfwGetWindowSize(this->window, &width, &height);
   return { (double)width, (double)height };
 };
+
+Position GLFWBackend::window_position() {
+  int x, y;
+  glfwGetWindowPos(this->window, &x, &y);
+  return { (double)x, (double)y };
+}
 
 Position GLFWBackend::cursor_pos() {
   double xpos, ypos;
@@ -127,9 +153,16 @@ void GLFWBackend::glfw_key_callback(
   int mod
 ) {
   auto app = Application::get_instance();
-  assert(app->focused);
   KeyEvent e;
   e.key = static_cast<Key>(scancode);
+  // handle keystate
+  if (app->keystate.contains(e.key)) {
+    app->keystate.erase(e.key);
+  } else {
+    app->keystate.set(e.key);
+  }
+  e.press = (action == GLFW_PRESS || action == GLFW_REPEAT);
+  e.keystate = &app->keystate;
   app->focused->send_key_event(e);
 }
 
@@ -161,6 +194,8 @@ void GLFWBackend::glfw_char_callback(
 ) {
   auto app = Application::get_instance();
   assert(app->focused);
-  app->focused->send_input_event(codepoint);
+  InputEvent e;
+  e.input = std::to_wstring(static_cast<wchar_t>(codepoint));
+  app->focused->send_input_event(e);
 }
 } // namespace hierro

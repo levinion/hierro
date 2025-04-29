@@ -2,7 +2,6 @@
 
 #include "GLFW/glfw3.h"
 #include "hierro/backend/backend.hpp"
-#include "hierro/event/keystate.hpp"
 #include "hierro/utils/data.hpp"
 
 namespace hierro {
@@ -20,6 +19,7 @@ public:
   virtual void minimize() override;
   virtual void fullscreen(bool flag) override;
   virtual Size window_size() override;
+  virtual Position window_position() override;
   virtual Position cursor_pos() override;
 
 private:
@@ -27,7 +27,9 @@ private:
   std::pair<int, int> gl_version = std::pair(3, 3);
   Size size = { 1.0f, 1.0f };
   Position position = { 0.0f, 1.0f };
-  KeyState keystate;
+
+  Size windowed_mode_size;
+  Position windowed_mode_position;
 
   // glfw hooks
   static void
