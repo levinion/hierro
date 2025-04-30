@@ -71,6 +71,13 @@ private:
   friend GLFWBackend;
 };
 
+class UnFocusEvent {
+public:
+private:
+  friend SDLBackend;
+  friend GLFWBackend;
+};
+
 class InputEvent {
 public:
   std::wstring input;

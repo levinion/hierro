@@ -2,6 +2,8 @@
 #include "hierro/component/text.hpp"
 #include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
+#include <SDL3/SDL_keyboard.h>
+#include <spdlog/spdlog.h>
 
 namespace hierro {
 
@@ -11,11 +13,14 @@ HierroResult<void> Input::draw() {
 
 IMPL_COMPONENT(Input)
 
-Input::Input() {
-  label = this->block->add_child<Label>();
+Input::Input() {}
+
+Input* Input::init() {
   block = this->add_child<Block>();
+  label = this->block->add_child<Label>();
 
   block->set_size(1.0, 1.0);
+  block->color = { 0.5, 0.2, 0.3 };
   block->center();
 
   label->set_size(0.9, 1);
@@ -24,10 +29,9 @@ Input::Input() {
   label->vertical_align = VerticalAlign::Left;
   label->content = L"";
 
-  // TODO: input event is not impl for now, so this widget doesn't work
-  block->on_input([&](unsigned int codepoint) {
-    label->content.push_back(codepoint);
-    this->send_input_event(codepoint);
+  block->on_input([&](InputEvent e) {
+    label->content += e.input;
+    this->send_input_event(e);
   });
 
   block->on_key([&](KeyEvent e) {
@@ -43,6 +47,7 @@ Input::Input() {
     }
     this->send_key_event(e);
   });
+  return this;
 }
 
 bool Input::is_hitted(float x, float y) {

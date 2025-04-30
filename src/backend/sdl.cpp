@@ -3,6 +3,7 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_hints.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_video.h>
 #include "hierro/app/app.hpp"
@@ -112,6 +113,9 @@ HierroResult<void> SDLBackend::init(WindowSettings settings) {
     return hierro_err("GLAD ERROR: Cannot load OpenGL.");
   }
 
+  // enable text input default
+  SDL_StartTextInput(window);
+
   return {};
 }
 
@@ -161,8 +165,6 @@ bool SDLBackend::update() {
         break;
       }
       case SDL_EVENT_TEXT_INPUT: {
-        // TODO: char* to keycode
-        // app->focused->input_callback(event.text.text);
         InputEvent e;
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         e.input = conv.from_bytes(event.text.text);

@@ -15,6 +15,7 @@ public:
   virtual bool is_hitted(float x, float y) override;
 
   Button();
+  Button* init();
 
   Block* block;
   Label* label;

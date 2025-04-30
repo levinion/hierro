@@ -14,6 +14,7 @@ public:
 
   virtual bool is_hitted(float x, float y) override;
   Input();
+  Input* init();
 
   Block* block;
   Label* label;

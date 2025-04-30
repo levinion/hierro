@@ -169,27 +169,14 @@ void Block::init_shader() {
     Shader("block_shader", vertex_shader_code, fragment_shader_code);
 }
 
-void Block::set_texture(unsigned char* pixels, int width, int height) {
-  if (this->texture_enabled)
-    return;
-  auto texture = Texture(pixels, width, height);
-
-  this->texture_enabled = true;
-  this->texture = texture;
-}
-
 void Block::set_texture(Texture texture) {
-  if (this->texture_enabled)
-    return;
   this->texture_enabled = true;
   this->texture = texture;
 }
 
-void Block::free_texture() {
-  if (this->texture_enabled) {
-    this->texture.free();
-    this->texture_enabled = false;
-  }
+void Block::destroy_texture() {
+  this->texture_enabled = false;
+  this->texture.free();
 }
 
 IMPL_COMPONENT(Block)

@@ -10,7 +10,9 @@ HierroResult<void> Button::draw() {
 
 IMPL_COMPONENT(Button)
 
-Button::Button() {
+Button::Button() {}
+
+Button* Button::init() {
   this->block = this->add_child<Block>();
   this->label = this->block->add_child<Label>();
 
@@ -24,15 +26,12 @@ Button::Button() {
   label->content = L"button";
   label->overflow = false;
 
-  block->on_input([&](unsigned int codepoint) {
-    this->send_input_event(codepoint);
-  });
-
+  block->on_input([&](InputEvent e) { this->send_input_event(e); });
   block->on_key([&](KeyEvent e) { this->send_key_event(e); });
-
-  block->on_focus([&]() { this->send_focus_event(); });
-
+  block->on_focus([&](FocusEvent e) { this->send_focus_event(e); });
   block->on_click([&](ClickEvent e) { this->send_click_event(e); });
+
+  return this;
 }
 
 bool Button::is_hitted(float x, float y) {

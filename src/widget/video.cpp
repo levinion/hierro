@@ -77,9 +77,8 @@ void Video::init(VideoSettings settings) {
     block->flip_y();
 
   // bind events
-  block->on_input([&](unsigned int codepoint) {
-    this->send_input_event(codepoint);
-  });
+  block->on_input([&](InputEvent e) { this->send_input_event(e); });
+  block->on_focus([&](FocusEvent e) { this->send_focus_event(e); });
   block->on_key([&](KeyEvent e) { this->send_key_event(e); });
   block->on_click([&](ClickEvent e) { this->send_click_event(e); });
   block->on_mouse_move([&](MouseMoveEvent e) { this->send_mouse_move_event(e); }

@@ -24,6 +24,7 @@ public:
   virtual std::function<void(KeyEvent)>& get_key_callback() = 0;
   virtual std::function<void(InputEvent)>& get_input_callback() = 0;
   virtual std::function<void(FocusEvent)>& get_focus_callback() = 0;
+  virtual std::function<void(UnFocusEvent)>& get_unfocus_callback() = 0;
   virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() = 0;
   virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() = 0;
 
@@ -79,8 +80,9 @@ public:
     father = this;
     assert(father != nullptr);
     auto& children = this->get_children();
+    auto p = child.get();
     children.push_back(std::move(child));
-    return children.back().get();
+    return p;
   }
 
   virtual HierroResult<void> draw_children() {
@@ -126,6 +128,12 @@ public:
   virtual Component* on_focus(std::function<void(FocusEvent)> callback) {
     auto& focus_callback = this->get_focus_callback();
     focus_callback = callback;
+    return this;
+  }
+
+  virtual Component* on_unfocus(std::function<void(UnFocusEvent)> callback) {
+    auto& unfocus_callback = this->get_unfocus_callback();
+    unfocus_callback = callback;
     return this;
   }
 
@@ -185,13 +193,15 @@ public:
   GET_REF(std::function<void(MouseMoveEvent)>, T, mouse_move_callback) \
   GET_REF(std::function<void(MouseWheelEvent)>, T, mouse_wheel_callback) \
   GET_REF(std::function<void(InputEvent)>, T, input_callback) \
-  GET_REF(std::function<void(FocusEvent)>, T, focus_callback)
+  GET_REF(std::function<void(FocusEvent)>, T, focus_callback) \
+  GET_REF(std::function<void(UnFocusEvent)>, T, unfocus_callback)
 
 #define COMPONENT_DEFAULT_CALLBACK \
   std::function<void(ClickEvent)> click_callback = [](ClickEvent) {}; \
   std::function<void(KeyEvent)> key_callback = [](KeyEvent) {}; \
   std::function<void(InputEvent)> input_callback = [](InputEvent) {}; \
   std::function<void(FocusEvent)> focus_callback = [](FocusEvent) {}; \
+  std::function<void(UnFocusEvent)> unfocus_callback = [](UnFocusEvent) {}; \
   std::function<void(MouseMoveEvent)> mouse_move_callback = \
     [](MouseMoveEvent) {}; \
   std::function<void(MouseWheelEvent)> mouse_wheel_callback = \
@@ -207,6 +217,7 @@ public:
   virtual std::function<void(KeyEvent)>& get_key_callback() override; \
   virtual std::function<void(InputEvent)>& get_input_callback() override; \
   virtual std::function<void(FocusEvent)>& get_focus_callback() override; \
+  virtual std::function<void(UnFocusEvent)>& get_unfocus_callback() override; \
   virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() \
     override; \
   virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() \

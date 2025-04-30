@@ -23,9 +23,8 @@ public:
   float border_thickness = 0.0f;
   Color border_color = Color(1.0, 0.0, 1.0);
 
-  void set_texture(unsigned char* pixels, int width, int height);
   void set_texture(Texture texture);
-  void free_texture();
+  void destroy_texture();
 
   Block();
   ~Block() = default;

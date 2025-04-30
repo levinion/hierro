@@ -7,10 +7,14 @@ init_windows:
   cmake -B build -DCMAKE_TOOLCHAIN_FILE=./toolchain.cmake
 
 build:
+  just init
   cmake --build build -j 8
 
+debug:
+  cmake -B build -DCMAKE_BUILD_TYPE=Debug
+  cmake --build build
+
 run:
-  just init
   just build
   ./build/{{name}}
 
