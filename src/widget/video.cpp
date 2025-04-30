@@ -1,5 +1,6 @@
 #include "hierro/app/app.hpp"
 #include "hierro/event/event.hpp"
+#include "hierro/utils/error.hpp"
 #include "hierro/utils/texture.hpp"
 #include "hierro/widget/video.hpp"
 #include <SDL3/SDL_events.h>
@@ -18,13 +19,6 @@ HierroResult<void> Video::draw() {
 };
 
 IMPL_COMPONENT(Video);
-
-static inline void check_error(int status) {
-  if (status < 0) {
-    spdlog::error("mpv api error: {}", mpv_error_string(status));
-    exit(1);
-  }
-}
 
 static int64_t size_fn(void* cookie) {
   return MPV_ERROR_UNSUPPORTED;
@@ -66,7 +60,7 @@ static void* get_proc_address_mpv(void* fn_ctx, const char* name) {
 
 Video::Video() {}
 
-void Video::init(VideoSettings settings) {
+Video* Video::init(VideoSettings settings) {
   this->frame_size = settings.frame_size;
 
   // init block;
@@ -116,8 +110,7 @@ void Video::init(VideoSettings settings) {
   }
   mpv_request_log_messages(mpv, "warn");
 
-  check_error(mpv_stream_cb_add_ro(mpv, "kaleido", &this->frame_stream, open_fn)
-  );
+  mpv_stream_cb_add_ro(mpv, "kaleido", &this->frame_stream, open_fn);
 
   auto op = (mpv_opengl_init_params) {
     .get_proc_address = get_proc_address_mpv,
@@ -158,13 +151,15 @@ void Video::init(VideoSettings settings) {
     { MPV_RENDER_PARAM_INVALID, NULL },
   };
 
-  check_error(mpv_render_context_create(&mpv_gl, mpv, params.data()));
+  mpv_render_context_create(&mpv_gl, mpv, params.data());
 
   this->params = params;
 
   // Play this file.
   const char* cmd[] = { "loadfile", "kaleido://fake", NULL };
-  check_error(mpv_command(mpv, cmd));
+  mpv_command(mpv, cmd);
+
+  return this;
 }
 
 void Video::update(unsigned char* data, int size) {
@@ -188,7 +183,7 @@ void Video::render() {
     mpfbo.w = frame_size.width;
     mpfbo.h = frame_size.height;
     glViewport(0, 0, frame_size.width, frame_size.height);
-    check_error(mpv_render_context_render(mpv_gl, params.data()));
+    mpv_render_context_render(mpv_gl, params.data());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, window_size.width, window_size.height);
   }

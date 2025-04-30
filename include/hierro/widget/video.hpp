@@ -39,7 +39,7 @@ public:
   COMPONENT_OVERRIDE_METHODS
   Video();
   ~Video();
-  void init(VideoSettings);
+  Video* init(VideoSettings);
   void update(unsigned char* data, int size);
   void render();
   void send_command(std::vector<std::string> cmd);
