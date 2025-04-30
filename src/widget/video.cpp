@@ -1,5 +1,4 @@
 #include "hierro/app/app.hpp"
-#include "hierro/event/event.hpp"
 #include "hierro/utils/error.hpp"
 #include "hierro/utils/texture.hpp"
 #include "hierro/widget/video.hpp"
@@ -71,15 +70,7 @@ Video* Video::init(VideoSettings settings) {
     block->flip_y();
 
   // bind events
-  block->on_input([&](InputEvent e) { this->send_input_event(e); });
-  block->on_focus([&](FocusEvent e) { this->send_focus_event(e); });
-  block->on_key([&](KeyEvent e) { this->send_key_event(e); });
-  block->on_click([&](ClickEvent e) { this->send_click_event(e); });
-  block->on_mouse_move([&](MouseMoveEvent e) { this->send_mouse_move_event(e); }
-  );
-  block->on_mouse_wheel([&](MouseWheelEvent e) {
-    this->send_mouse_wheel_event(e);
-  });
+  block->set_proxy(this);
 
   auto app = Application::get_instance();
   auto window_size = app->window_size();

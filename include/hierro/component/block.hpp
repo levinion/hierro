@@ -28,6 +28,7 @@ public:
 
   Block();
   ~Block() = default;
+  Block* init();
 
   inline void flip_y() {
     _flip_y ? _flip_y = false : _flip_y = true;

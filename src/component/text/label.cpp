@@ -7,6 +7,10 @@ namespace hierro {
 
 Label::Label() {}
 
+Label* Label::init() {
+  return this;
+}
+
 HierroResult<void> Label::draw() {
   // assert tg is inited
   auto tg = TextGenerater::get_instance();

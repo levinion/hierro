@@ -26,6 +26,7 @@ public:
   virtual Size window_size() = 0;
   virtual Position window_position() = 0;
   virtual Position cursor_pos() = 0;
+  virtual void set_vsync(bool flag) = 0;
 
   GLFWBackend* as_glfw() {
     return reinterpret_cast<GLFWBackend*>(this);

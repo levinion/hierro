@@ -11,8 +11,6 @@ int main() {
   WindowSettings ws;
   app->init<SDLBackend>(ws).value();
 
-  auto video = app->add_child<Video>();
-
   int w1, h1, c1;
   auto p1 = stbi_load("assets/p1.jpg", &w1, &h1, &c1, 0);
 
@@ -22,7 +20,8 @@ int main() {
   vs.format = "rgb24";
   vs.gl_format = GL_RGB;
 
-  video->init(vs);
+  auto video = app->add_child<Video>(vs);
+
   video->set_size(0.5, 0.5);
   video->center();
 

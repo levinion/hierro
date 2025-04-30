@@ -21,6 +21,7 @@ public:
   virtual Size window_size() override;
   virtual Position window_position() override;
   virtual Position cursor_pos() override;
+  virtual void set_vsync(bool flag) override;
 
 private:
   GLFWwindow* window;

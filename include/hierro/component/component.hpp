@@ -28,6 +28,11 @@ public:
   virtual std::function<void(MouseMoveEvent)>& get_mouse_move_callback() = 0;
   virtual std::function<void(MouseWheelEvent)>& get_mouse_wheel_callback() = 0;
 
+  // TODO: give every component a dirty property, showing it should be redraw on the next frame
+  virtual bool is_dirty() {
+    return true;
+  };
+
   virtual ~Component() = default;
 
   virtual Position absolute_position() {
@@ -68,21 +73,22 @@ public:
     size.height = height;
   }
 
-  template<typename T>
-  T* add_child() {
+  template<typename T, typename... Args>
+  auto add_child(Args... args) {
     static_assert(
       std::is_base_of<Component, T>::value,
       "T should impl hierro::Component"
     );
     auto child = std::make_unique<T>();
+    // set child's father field to this component
     auto& father = child->get_father();
-    assert(father == nullptr);
     father = this;
-    assert(father != nullptr);
+    // add child to this component's children vector
     auto& children = this->get_children();
     auto p = child.get();
     children.push_back(std::move(child));
-    return p;
+    // init child
+    return p->init(std::forward<Args>(args)...);
   }
 
   virtual HierroResult<void> draw_children() {
@@ -100,7 +106,7 @@ public:
     return this;
   }
 
-  virtual void send_click_event(ClickEvent e) {
+  virtual void emit_click_event(ClickEvent e) {
     this->get_click_callback()(e);
   }
 
@@ -110,7 +116,7 @@ public:
     return this;
   }
 
-  virtual void send_key_event(KeyEvent e) {
+  virtual void emit_key_event(KeyEvent e) {
     this->get_key_callback()(e);
   }
 
@@ -120,7 +126,7 @@ public:
     return this;
   }
 
-  virtual void send_input_event(InputEvent e) {
+  virtual void emit_input_event(InputEvent e) {
     this->get_input_callback()(e);
   }
 
@@ -131,14 +137,18 @@ public:
     return this;
   }
 
+  virtual void emit_focus_event(FocusEvent e) {
+    this->get_focus_callback()(e);
+  }
+
   virtual Component* on_unfocus(std::function<void(UnFocusEvent)> callback) {
     auto& unfocus_callback = this->get_unfocus_callback();
     unfocus_callback = callback;
     return this;
   }
 
-  virtual void send_focus_event(FocusEvent e) {
-    this->get_focus_callback()(e);
+  virtual void emit_unfocus_event(UnFocusEvent e) {
+    this->get_unfocus_callback()(e);
   }
 
   virtual Component*
@@ -148,7 +158,7 @@ public:
     return this;
   }
 
-  virtual void send_mouse_move_event(MouseMoveEvent e) {
+  virtual void emit_mouse_move_event(MouseMoveEvent e) {
     this->get_mouse_move_callback()(e);
   }
 
@@ -159,7 +169,7 @@ public:
     return this;
   }
 
-  virtual void send_mouse_wheel_event(MouseWheelEvent e) {
+  virtual void emit_mouse_wheel_event(MouseWheelEvent e) {
     this->get_mouse_wheel_callback()(e);
   }
 
@@ -167,6 +177,21 @@ public:
     auto [px, py] = this->absolute_position();
     auto [width, height] = this->absolute_size();
     return (x >= px && x <= px + width && y >= py - height && y <= py);
+  }
+
+  // A simple way to bind all event callbacks to another component, which is useful when creating widgets
+  void set_proxy(Component* proxy) {
+    this->on_input([=](InputEvent e) { proxy->emit_input_event(e); });
+    this->on_focus([=](FocusEvent e) { proxy->emit_focus_event(e); });
+    this->on_unfocus([=](UnFocusEvent e) { proxy->emit_unfocus_event(e); });
+    this->on_key([=](KeyEvent e) { proxy->emit_key_event(e); });
+    this->on_click([=](ClickEvent e) { proxy->emit_click_event(e); });
+    this->on_mouse_move([=](MouseMoveEvent e) {
+      proxy->emit_mouse_move_event(e);
+    });
+    this->on_mouse_wheel([=](MouseWheelEvent e) {
+      proxy->emit_mouse_wheel_event(e);
+    });
   }
 };
 

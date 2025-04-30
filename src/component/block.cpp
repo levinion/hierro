@@ -10,7 +10,9 @@
 
 namespace hierro {
 
-Block::Block() {
+Block::Block() {}
+
+Block* Block::init() {
   // init vao
   glGenVertexArrays(1, &this->vao);
   // init vbo
@@ -43,6 +45,7 @@ Block::Block() {
   unsigned char placehold_texture_pixels[4] = { 255, 255, 255, 255 };
   auto placehold_texture = Texture(placehold_texture_pixels, 1, 1);
   this->placehold_texture = placehold_texture;
+  return this;
 }
 
 HierroResult<void> Block::draw() {

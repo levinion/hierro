@@ -163,7 +163,7 @@ void GLFWBackend::glfw_key_callback(
   }
   e.press = (action == GLFW_PRESS || action == GLFW_REPEAT);
   e.keystate = &app->keystate;
-  app->focused->send_key_event(e);
+  app->focused->emit_key_event(e);
 }
 
 void GLFWBackend::glfw_mouse_button_callabck(
@@ -185,7 +185,7 @@ void GLFWBackend::glfw_mouse_button_callabck(
   e.button = static_cast<MouseButton>(button - 1);
   e.press = action;
   e.position = cursor_pos;
-  app->focused->send_click_event(e);
+  app->focused->emit_click_event(e);
 }
 
 void GLFWBackend::glfw_char_callback(
@@ -196,6 +196,10 @@ void GLFWBackend::glfw_char_callback(
   assert(app->focused);
   InputEvent e;
   e.input = std::to_wstring(static_cast<wchar_t>(codepoint));
-  app->focused->send_input_event(e);
+  app->focused->emit_input_event(e);
+}
+
+void GLFWBackend::set_vsync(bool flag) {
+  glfwSwapInterval(flag ? 1 : 0);
 }
 } // namespace hierro

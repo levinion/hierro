@@ -148,7 +148,7 @@ bool SDLBackend::update() {
         }
         e.press = event.key.down;
         e.keystate = &app->keystate;
-        app->focused->send_key_event(e);
+        app->focused->emit_key_event(e);
         break;
       }
       case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -161,14 +161,14 @@ bool SDLBackend::update() {
         e.button = static_cast<MouseButton>(event.button.button);
         e.press = event.button.down;
         e.position = { event.button.x, event.button.y };
-        app->focused->send_click_event(e);
+        app->focused->emit_click_event(e);
         break;
       }
       case SDL_EVENT_TEXT_INPUT: {
         InputEvent e;
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         e.input = conv.from_bytes(event.text.text);
-        app->focused->send_input_event(e);
+        app->focused->emit_input_event(e);
         break;
       }
       case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
@@ -183,13 +183,13 @@ bool SDLBackend::update() {
         e.xrel = event.motion.xrel;
         e.yrel = event.motion.yrel;
         e.position = { event.motion.x, event.motion.y };
-        app->focused->send_mouse_move_event(e);
+        app->focused->emit_mouse_move_event(e);
         break;
       }
       case SDL_EVENT_MOUSE_WHEEL: {
         MouseWheelEvent e;
         e.y = event.wheel.y;
-        app->focused->send_mouse_wheel_event(e);
+        app->focused->emit_mouse_wheel_event(e);
         break;
       }
     }
@@ -241,5 +241,9 @@ Position SDLBackend::cursor_pos() {
   SDL_GetMouseState(&xpos, &ypos);
   return { xpos, ypos };
 };
+
+void SDLBackend::set_vsync(bool flag) {
+  SDL_GL_SetSwapInterval(flag ? 1 : 0);
+}
 
 } // namespace hierro

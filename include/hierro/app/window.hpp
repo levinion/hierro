@@ -22,6 +22,7 @@ public:
   std::optional<double> frame_limit;
   // only with sdl backend
   std::optional<unsigned long> x11_window = {};
+  bool vsync = false;
 };
 
 } // namespace hierro

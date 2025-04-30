@@ -109,9 +109,16 @@ void Application::search_focus(float x, float y) {
   for (auto& child : this->get_children()) {
     range_tree(child, x, y, focused);
   }
-  this->focused = focused;
-  FocusEvent e;
-  focused->send_focus_event(e);
+
+  if (focused != this->focused) {
+    {
+      UnFocusEvent e;
+      this->focused->emit_unfocus_event(e);
+    }
+    this->focused = focused;
+    FocusEvent e;
+    this->focused->emit_focus_event(e);
+  }
 }
 
 void Application::set_focus(Component* component) {
@@ -133,6 +140,10 @@ void Application::fullscreen(bool flag) {
 
 void Application::resize(Size size) {
   backend->resize(size);
+}
+
+void Application::set_vsync(bool flag) {
+  backend->set_vsync(flag);
 }
 
 } // namespace hierro

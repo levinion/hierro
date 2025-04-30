@@ -12,6 +12,7 @@ namespace hierro {
 class Label: public Component {
 public:
   Label();
+  Label* init();
 
   Label(std::wstring content) : content(content) {}
 

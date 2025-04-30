@@ -31,7 +31,7 @@ Input* Input::init() {
 
   block->on_input([&](InputEvent e) {
     label->content += e.input;
-    this->send_input_event(e);
+    this->emit_input_event(e);
   });
 
   block->on_key([&](KeyEvent e) {
@@ -45,7 +45,7 @@ Input* Input::init() {
     if (e.key == hierro::Key::Enter && e.press) {
       label->content.push_back('\n');
     }
-    this->send_key_event(e);
+    this->emit_key_event(e);
   });
   return this;
 }

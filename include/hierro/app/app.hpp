@@ -45,6 +45,8 @@ public:
       hierro_check(this->tg->init(this->fonts[0], font_size));
     }
 
+    this->set_vsync(settings.vsync);
+
     return {};
   }
 
@@ -77,6 +79,7 @@ public:
   void fullscreen(bool flag);
   void maximize();
   void resize(Size size);
+  void set_vsync(bool flag);
 
   TextGenerater* tg = TextGenerater::get_instance();
   std::vector<std::string> fonts;

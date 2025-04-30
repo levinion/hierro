@@ -1,6 +1,5 @@
 #include "hierro/widget/button.hpp"
 #include "hierro/utils/error.hpp"
-#include "hierro/event/event.hpp"
 
 namespace hierro {
 
@@ -26,10 +25,7 @@ Button* Button::init() {
   label->content = L"button";
   label->overflow = false;
 
-  block->on_input([&](InputEvent e) { this->send_input_event(e); });
-  block->on_key([&](KeyEvent e) { this->send_key_event(e); });
-  block->on_focus([&](FocusEvent e) { this->send_focus_event(e); });
-  block->on_click([&](ClickEvent e) { this->send_click_event(e); });
+  block->set_proxy(this);
 
   return this;
 }
