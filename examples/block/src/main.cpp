@@ -1,6 +1,4 @@
-#include <cmath>
 #include <cstdlib>
-#include <ctime>
 #include <random>
 #include "hierro/hierro.hpp"
 

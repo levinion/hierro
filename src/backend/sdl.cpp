@@ -10,7 +10,6 @@
 #include "hierro/utils/error.hpp"
 #include "hierro/event/event.hpp"
 #include "hierro/app/window.hpp"
-#include <codecvt>
 
 namespace hierro {
 HierroResult<void> SDLBackend::init(WindowSettings settings) {
@@ -166,8 +165,10 @@ bool SDLBackend::update() {
       }
       case SDL_EVENT_TEXT_INPUT: {
         InputEvent e;
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        e.input = conv.from_bytes(event.text.text);
+        e.input = std::wstring(
+          event.text.text,
+          event.text.text + strlen(event.text.text)
+        );
         app->focused->emit_input_event(e);
         break;
       }

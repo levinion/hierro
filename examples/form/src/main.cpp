@@ -1,6 +1,3 @@
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
 #include "hierro/hierro.hpp"
 
 using namespace hierro;

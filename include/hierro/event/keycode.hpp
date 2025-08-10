@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 namespace hierro {
 enum class Key : int {
   Unknown = 0, // UNKNOWN
