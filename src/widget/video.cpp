@@ -1,15 +1,16 @@
-#include "hierro/app/app.hpp"
-#include "hierro/utils/error.hpp"
-#include "hierro/utils/texture.hpp"
-#include "hierro/widget/video.hpp"
-#include <SDL3/SDL_events.h>
-#include <SDL3/SDL_video.h>
-#include <mpv/client.h>
-#include <mpv/render.h>
-#include <mpv/render_gl.h>
-#include <mpv/stream_cb.h>
-#include <concurrentqueue.h>
-#include <spdlog/spdlog.h>
+#ifdef ENABLE_VIDEO_COMPONENT
+  #include "hierro/app/app.hpp"
+  #include "hierro/utils/error.hpp"
+  #include "hierro/utils/texture.hpp"
+  #include "hierro/widget/video.hpp"
+  #include <SDL3/SDL_events.h>
+  #include <SDL3/SDL_video.h>
+  #include <mpv/client.h>
+  #include <mpv/render.h>
+  #include <mpv/render_gl.h>
+  #include <mpv/stream_cb.h>
+  #include <concurrentqueue.h>
+  #include <spdlog/spdlog.h>
 
 namespace hierro {
 
@@ -208,3 +209,4 @@ Video::~Video() {
   glDeleteFramebuffers(1, &fbo);
 }
 } // namespace hierro
+#endif

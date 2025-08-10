@@ -1,12 +1,14 @@
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-#include "hierro/backend/glfw.hpp"
-#include <string>
-#include "hierro/utils/error.hpp"
-#include "hierro/event/event.hpp"
-#include "hierro/utils/data.hpp"
-#include "hierro/app/window.hpp"
-#include "hierro/app/app.hpp"
+#ifdef ENABLE_GLFW_BACKEND
+
+  #include "glad/glad.h"
+  #include "GLFW/glfw3.h"
+  #include "hierro/backend/glfw.hpp"
+  #include <string>
+  #include "hierro/utils/error.hpp"
+  #include "hierro/event/event.hpp"
+  #include "hierro/utils/data.hpp"
+  #include "hierro/app/window.hpp"
+  #include "hierro/app/app.hpp"
 
 namespace hierro {
 HierroResult<void> GLFWBackend::init(WindowSettings settings) {
@@ -203,3 +205,5 @@ void GLFWBackend::set_vsync(bool flag) {
   glfwSwapInterval(flag ? 1 : 0);
 }
 } // namespace hierro
+
+#endif
