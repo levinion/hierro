@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef ENABLE_GLFW_BACKEND
+  #error "GLFW backend is not enabled, please use ENABLE_GLFW_BACKEND flag"
+#endif
+
 #include "GLFW/glfw3.h"
 #include "hierro/backend/backend.hpp"
 #include "hierro/utils/data.hpp"

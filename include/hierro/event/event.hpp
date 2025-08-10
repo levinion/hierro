@@ -1,8 +1,12 @@
 #pragma once
 
 #include <vector>
-#include "hierro/backend/glfw.hpp"
-#include "hierro/backend/sdl.hpp"
+#ifdef ENABLE_GLFW_BACKEND
+  #include "hierro/backend/glfw.hpp"
+#endif
+#ifdef ENABLE_SDL_BACKEND
+  #include "hierro/backend/sdl.hpp"
+#endif
 #include "hierro/event/keycode.hpp"
 #include "magic_enum/magic_enum.hpp"
 #include "hierro/event/keystate.hpp"
@@ -16,8 +20,12 @@ public:
   bool press; // false for release and true for press
 
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class KeyEvent {
@@ -60,22 +68,34 @@ public:
 
 private:
   KeyState* keystate;
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class FocusEvent {
 public:
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class UnFocusEvent {
 public:
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class InputEvent {
@@ -83,8 +103,12 @@ public:
   std::wstring input;
 
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class MouseMoveEvent {
@@ -94,8 +118,12 @@ public:
   Position position = { 0, 0 };
 
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 class MouseWheelEvent {
@@ -103,8 +131,12 @@ public:
   float y;
 
 private:
+#ifdef ENABLE_SDL_BACKEND
   friend SDLBackend;
+#endif
+#ifdef ENABLE_GLFW_BACKEND
   friend GLFWBackend;
+#endif
 };
 
 } // namespace hierro

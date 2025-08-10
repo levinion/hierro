@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef ENABLE_VIDEO_COMPONENT
+  #error \
+    "Video component is not enabled, please use ENABLE_VIDEO_COMPONENT flag"
+#endif
+
 #include "hierro/component/block.hpp"
 #include "hierro/utils/texture.hpp"
 #include <GL/gl.h>

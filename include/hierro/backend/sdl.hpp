@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef ENABLE_SDL_BACKEND
+  #error "SDL backend is not enabled, please use ENABLE_SDL_BACKEND flag"
+#endif
+
 #include <SDL3/SDL_video.h>
 #include "hierro/backend/backend.hpp"
 #include "hierro/utils/data.hpp"
