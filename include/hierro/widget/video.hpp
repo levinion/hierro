@@ -1,19 +1,16 @@
 #pragma once
 
-#ifndef ENABLE_VIDEO_COMPONENT
-  #error \
-    "Video component is not enabled, please use ENABLE_VIDEO_COMPONENT flag"
-#endif
+#ifdef ENABLE_VIDEO_COMPONENT
 
-#include "hierro/component/block.hpp"
-#include "hierro/utils/texture.hpp"
-#include <GL/gl.h>
-#include <mpv/client.h>
-#include <mpv/render.h>
-#include "hierro/component/component.hpp"
-#include <concurrentqueue.h>
-#include <mpv/render_gl.h>
-#include <memory>
+  #include "hierro/component/block.hpp"
+  #include "hierro/utils/texture.hpp"
+  #include <GL/gl.h>
+  #include <mpv/client.h>
+  #include <mpv/render.h>
+  #include "hierro/component/component.hpp"
+  #include <concurrentqueue.h>
+  #include <mpv/render_gl.h>
+  #include <memory>
 
 namespace hierro {
 
@@ -75,3 +72,4 @@ private:
   COMPONENT_DEFAULT_CALLBACK
 };
 } // namespace hierro
+#endif

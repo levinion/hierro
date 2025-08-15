@@ -1,12 +1,10 @@
 #pragma once
 
-#ifndef ENABLE_GLFW_BACKEND
-  #error "GLFW backend is not enabled, please use ENABLE_GLFW_BACKEND flag"
-#endif
+#ifdef ENABLE_GLFW_BACKEND
 
-#include "GLFW/glfw3.h"
-#include "hierro/backend/backend.hpp"
-#include "hierro/utils/data.hpp"
+  #include "GLFW/glfw3.h"
+  #include "hierro/backend/backend.hpp"
+  #include "hierro/utils/data.hpp"
 
 namespace hierro {
 class GLFWBackend: public Backend {
@@ -57,3 +55,5 @@ private:
   // TODO: glfw mouse move callback
 };
 } // namespace hierro
+
+#endif
